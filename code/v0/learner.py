@@ -79,7 +79,7 @@ class Learner(object):
                 np.round(vl_acc, 4),
                 optimizer.param_groups[0]['lr']]
 
-            logger.to_csv(os.path.join(self.config.log_path, 'log.csv'))
+            logger.to_csv(os.path.join(self.config.log_path, f'log.{self.name.split(".")[-1]}.csv'))
 
             # save model
             if best_metric < logger.loc[epoch, 'val_metric']:
