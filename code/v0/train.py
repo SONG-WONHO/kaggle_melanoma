@@ -30,8 +30,8 @@ class CFG:
 
     # train
     batch_size = 64
-    learning_rate = 1e-3
-    num_epochs = 10
+    learning_rate = 5e-4
+    num_epochs = 40
 
     # etc
     seed = 42
@@ -212,8 +212,6 @@ def main():
         ### train related
         # train model
         learner.train(trn_data, val_data, model, optimizer, scheduler)
-
-        break
 
 
 if __name__ == "__main__":
