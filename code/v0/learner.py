@@ -112,7 +112,7 @@ class Learner(object):
 
         test_loader = tqdm(test_loader, leave=False)
 
-        for X_batch, _, _, _ in test_loader:
+        for X_batch, _ in test_loader:
             X_batch = X_batch.to(self.config.device)
 
             with torch.no_grad():
