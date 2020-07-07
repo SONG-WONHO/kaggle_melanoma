@@ -128,7 +128,7 @@ def main():
 
     # folds
     for fold in range(CFG.n_folds):
-        print(f"Fold: {fold}")
+        print(f"========== Fold: {fold} ==========")
         # load learner
         print("Load Model")
         model_name = f'model.fold_{fold}.best.pt'
@@ -145,8 +145,9 @@ def main():
                 test_preds += torch.sigmoid(learner.predict(tta_data).view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
+        print()
 
-    ss_df = pd.read_csv(os.path.join(CFG.root_path, "siim-isic-melanoma-classification", "sample_submission.csv"))
+    ss_df = pd.read_csv(os.path.join(CFG.root_path, "melanoma-external-malignant-256", "sample_submission.csv"))
     test_df['target'] = final_preds
     test_df.set_index("image_name", inplace=True)
     ss_df = test_df.loc[ss_df['image_name']].reset_index()[['image_name', 'target']]
