@@ -77,6 +77,7 @@ def main():
     for fold in range(CFG.n_folds):
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
         score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
+        print(score)
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
 
@@ -109,7 +110,9 @@ def main():
 
     # folds
     for fold in range(CFG.n_folds):
+        print(f"Fold: {fold}")
         # load learner
+        print("Load Model")
         model_name = f'model.fold_{fold}.best.pt'
         learner = Learner(CFG)
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
@@ -117,6 +120,7 @@ def main():
         # prediction
         test_preds = learner.predict(tst_data)
         print(test_preds.shape)
+        print()
 
 
 
