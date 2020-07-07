@@ -88,6 +88,7 @@ def main():
                    f"metric_{metric:.4f}.csv"
 
     pprint({k: v for k, v in dict(CFG.__dict__).items() if '__' not in k})
+    print()
 
     ### seed all
     seed_everything(CFG.seed)
@@ -96,17 +97,22 @@ def main():
     # load data
     print("Load Raw Data")
     _, test_df = load_data(CFG)
+    print()
 
     # preprocess data
     print("Preprocess Data")
     test_df = preprocess_data(CFG, test_df)
+    print()
 
     # get transform
     print("Get Transform")
     _, test_transforms = get_transform(CFG)
+    print()
 
     # dataset
     tst_data = MelanomaDataset(CFG, test_df, test_transforms)
+
+    final_preds = np.zeros(test_df.shape[0])
 
     # folds
     for fold in range(CFG.n_folds):
@@ -118,9 +124,13 @@ def main():
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
         # prediction
-        test_preds = learner.predict(tst_data)
+        test_preds = learner.predict(tst_data).reshape(-1)
         print(test_preds.shape)
+
+        final_preds += test_preds / CFG.n_folds
         print()
+
+        print(final_preds[:10], final_preds.shape)
 
 
 
