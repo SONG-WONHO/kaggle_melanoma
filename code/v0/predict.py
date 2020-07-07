@@ -77,7 +77,6 @@ def main():
     for fold in range(CFG.n_folds):
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
         score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
-        print(score)
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
 
@@ -124,7 +123,7 @@ def main():
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
         # prediction
-        test_preds = learner.predict(tst_data).reshape(-1)
+        test_preds = torch.sigmoid(learner.predict(tst_data).view(-1)).numpy()
         print(test_preds.shape)
 
         final_preds += test_preds / CFG.n_folds
