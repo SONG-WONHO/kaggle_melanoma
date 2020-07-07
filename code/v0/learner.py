@@ -122,7 +122,7 @@ class Learner(object):
 
             pred_final.append(preds)
 
-        pred_final = torch.cat(pred_final, dim=0).numpy()
+        pred_final = torch.cat(pred_final, dim=0)
 
         return pred_final
 
