@@ -4,6 +4,7 @@ import warnings
 
 import torch
 import torch.nn as nn
+import torchtoolbox.transform as transforms
 
 from data import *
 from transform import get_transform
@@ -86,6 +87,9 @@ def main():
                    f"loss_{loss:.4f}." \
                    f"metric_{metric:.4f}.csv"
 
+    if CFG.tta:
+        CFG.sub_name = "tta." + CFG.sub_name
+
     pprint({k: v for k, v in dict(CFG.__dict__).items() if '__' not in k})
     print()
 
@@ -111,6 +115,15 @@ def main():
     # dataset
     tst_data = MelanomaDataset(CFG, test_df, test_transforms)
 
+    # if tta
+    tta_transforms = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    tta_data = MelanomaDataset(CFG, test_df, tta_transforms)
+
     final_preds = np.zeros(test_df.shape[0])
 
     # folds
@@ -123,15 +136,23 @@ def main():
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
         # prediction
-        test_preds = torch.sigmoid(learner.predict(tst_data).view(-1)).numpy()
-        print(test_preds.shape)
+        if not CFG.tta:
+            test_preds = torch.sigmoid(learner.predict(tst_data).view(-1)).numpy()
+
+        else:
+            test_preds = np.zeros(test_df.shape[0])
+            for _ in range(4):
+                test_preds += torch.sigmoid(learner.predict(tta_data).view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
-        print()
 
-        print(final_preds[:10], final_preds.shape)
+    ss_df = pd.read_csv(os.path.join(CFG.root_path, "siim-isic-melanoma-classification", "sample_submission.csv"))
+    test_df['target'] = final_preds
+    test_df.set_index("image_name", inplace=True)
+    ss_df = test_df.loc[ss_df['image_name']].reset_index()[['image_name', 'target']]
+    ss_df.to_csv(os.path.join(CFG.save_path, f"{CFG.sub_name}"), index=False)
 
-
+    print(ss_df.head())
 
 
 if __name__ == '__main__':
