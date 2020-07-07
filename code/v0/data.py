@@ -35,6 +35,8 @@ def load_data(config):
 
     print(f"... Train Shape: {train_df.shape}, Test Shape: {test_df.shape}")
 
+    test_df['fold'] = np.nan
+
     return train_df, test_df
 
 
