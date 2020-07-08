@@ -3,3 +3,5 @@ v0
 v1
     - BalanceBatchSampler: sample class to be stratified in batch level (Good)
     - BalanceSampler: upsample or downsample (Bad)
+v2
+    - Weighted Loss Function (weighted to melanoma)
