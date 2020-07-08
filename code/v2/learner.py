@@ -188,8 +188,6 @@ class Learner(object):
             loss = loss_func(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
-            return
-
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
