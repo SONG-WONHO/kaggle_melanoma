@@ -36,8 +36,6 @@ def load_data(config):
 
     print(f"... Train Shape: {train_df.shape}, Test Shape: {test_df.shape}")
 
-    test_df['fold'] = np.nan
-
     return train_df, test_df
 
 
@@ -94,14 +92,14 @@ def split_data(config, df):
 class MelanomaDataset(Dataset):
     def __init__(self, config, df, transforms=None):
         self.config = config
-        self.df = df.values
+        self.df = df[['image_path', 'target']].values
         self.transforms = transforms
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        _, _, _, _, _, label, fn, _ = self.df[idx]
+        fn, label = self.df[idx]
         im = cv2.imread(fn)
 
         # Apply transformations
