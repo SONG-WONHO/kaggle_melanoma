@@ -5,3 +5,5 @@ v1
     - BalanceSampler: upsample or downsample (Bad)
 v2
     - Weighted Loss Function (weighted to melanoma)
+v3
+    - Best Loss vs Best Metric
