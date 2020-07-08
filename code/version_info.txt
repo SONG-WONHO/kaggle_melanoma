@@ -2,3 +2,4 @@ v0
     - Base
 v1
     - BalanceBatchSampler: sample class to be stratified in batch level
+    - BalanceSampler: upsample or downsample
