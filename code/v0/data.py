@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupKFold
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 
 import cv2
 
@@ -17,7 +18,7 @@ def load_data(config):
     Returns: train_df, test_df
     """
 
-    data_path = os.path.join(config.root_path, "melanoma-external-malignant-256")
+    data_path = os.path.join(config.root_path, "jpeg-melanoma-256x256")
 
     train_df = pd.read_csv(os.path.join(data_path, "train.csv"))
     test_df = pd.read_csv(os.path.join(data_path, "test.csv"))
@@ -51,6 +52,7 @@ def preprocess_data(config, df):
     """
 
     df['patient_id'].fillna("NaN", inplace=True)
+    df['sex'].fillna("NaN", inplace=True)
     return df
 
 
@@ -66,8 +68,24 @@ def split_data(config, df):
 
     df['fold'] = -1
 
+    """
+    # GroupKFold
     gkf = GroupKFold(n_splits=config.n_folds)
     for fold, (_, vl_idx) in enumerate(gkf.split(X=df, groups=df['patient_id'])):
+        df.loc[vl_idx, "fold"] = fold
+    """
+
+    # MultilabelStratifiedKFold
+    mskf = MultilabelStratifiedKFold(n_splits=config.n_folds, random_state=config.seed, shuffle=True)
+
+    # patient level
+    patient = df.groupby("patient_id")['target'].apply(lambda v: (v == 1).any())
+    patient = pd.concat([patient, df.groupby('patient_id')['sex'].apply(lambda v: v.iloc[0])], axis=1)
+    patient = pd.concat([patient, df.groupby("patient_id").size()], axis=1).rename({0: "size"}, axis=1)
+    patient['size'] = pd.qcut(patient['size'], 10, labels=range(10))
+
+    for fold, (tr_idx, vl_idx) in enumerate(mskf.split(X=patient, y=patient.values)):
+        vl_idx = df[df['patient_id'].isin(patient.iloc[vl_idx].index)].index
         df.loc[vl_idx, "fold"] = fold
 
     return df
