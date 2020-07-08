@@ -143,7 +143,7 @@ class Learner(object):
         model = get_model(self.config)
         try:
             model.load_state_dict(model_state_dict)
-            print("Single GPU (Train)")
+            print("... Single GPU (Train)")
         except:
             def strip_module_str(v):
                 if v.startswith('module.'):
@@ -151,10 +151,10 @@ class Learner(object):
 
             model_state_dict = {strip_module_str(k): v for k, v in model_state_dict.items()}
             model.load_state_dict(model_state_dict)
-            print("Multi GPU (Train)")
+            print("... Multi GPU (Train)")
 
         self.best_model = model.to(self.config.device)
-        print("Model Loaded!")
+        print("... Model Loaded!")
 
     def _train_one_epoch(self, train_loader, model, optimizer, scheduler):
         losses = AverageMeter()
