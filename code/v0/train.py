@@ -169,6 +169,8 @@ def main():
     print("Get Transform")
     train_transforms, test_transforms = get_transform(CFG)
 
+    print(data_df)
+
     # train test split
     for fold in range(CFG.n_folds):
         print(f"Validation Fold: {fold}")
