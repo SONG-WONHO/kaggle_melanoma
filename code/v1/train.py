@@ -212,6 +212,7 @@ def main():
         ### train related
         # train model
         learner.train(trn_data, val_data, model, optimizer, scheduler)
+        print()
 
 
 if __name__ == "__main__":
