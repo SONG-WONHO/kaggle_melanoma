@@ -83,6 +83,8 @@ class Learner(object):
         best_metric = 1e-8
         for epoch in range(self.config.num_epochs):
             tr_loss = self._train_one_epoch(train_loader, model, optimizer, scheduler)
+            if epoch % 5 != 0:
+                continue
             vl_loss, vl_metric, vl_acc = self._valid_one_epoch(valid_loader, model)
 
             # logging
