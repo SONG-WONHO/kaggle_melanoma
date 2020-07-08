@@ -61,7 +61,7 @@ class Learner(object):
         """
 
         ### BalanceClassSampler
-        balance_sampler = BalanceClassSampler(trn_data.df[:, 1], "upsampling")
+        balance_sampler = BalanceClassSampler(trn_data.df[:, 1])
 
         train_loader = DataLoader(
             trn_data,
