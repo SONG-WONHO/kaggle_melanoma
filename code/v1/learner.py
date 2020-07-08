@@ -51,16 +51,15 @@ class Learner(object):
     def train(self, trn_data, val_data, model, optimizer, scheduler):
 
         ### BalanceBatchSampler
-        """
         balance_sampler = BalanceBatchSampler(trn_data.df[:, 1], self.config.batch_size)
 
         train_loader = DataLoader(
             trn_data, batch_sampler=balance_sampler,
             num_workers=self.config.workers, pin_memory=True,
         )
-        """
 
         ### BalanceClassSampler
+        """
         balance_sampler = BalanceClassSampler(trn_data.df[:, 1])
 
         train_loader = DataLoader(
@@ -69,6 +68,7 @@ class Learner(object):
             num_workers=self.config.workers, pin_memory=True,
             sampler=balance_sampler
         )
+        """
 
         valid_loader = DataLoader(
             val_data,
@@ -83,8 +83,6 @@ class Learner(object):
         best_metric = 1e-8
         for epoch in range(self.config.num_epochs):
             tr_loss = self._train_one_epoch(train_loader, model, optimizer, scheduler)
-            if epoch % 5 != 0:
-                continue
             vl_loss, vl_metric, vl_acc = self._valid_one_epoch(valid_loader, model)
 
             # logging
