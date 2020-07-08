@@ -207,7 +207,7 @@ def main():
 
         # get scheduler
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode='min', patience=1, verbose=False, factor=0.2)
+            optimizer, mode='min', patience=5, verbose=False, factor=0.5)
 
         ### train related
         # train model
