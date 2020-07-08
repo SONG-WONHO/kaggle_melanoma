@@ -18,6 +18,7 @@ def load_data(config):
     Returns: train_df, test_df
     """
 
+    # data_path = os.path.join(config.root_path, "melanoma-external-malignant-256")
     data_path = os.path.join(config.root_path, "jpeg-melanoma-256x256")
 
     train_df = pd.read_csv(os.path.join(data_path, "train.csv"))
@@ -76,7 +77,7 @@ def split_data(config, df):
     # MultilabelStratifiedKFold
     mskf = MultilabelStratifiedKFold(n_splits=config.n_folds, random_state=config.seed, shuffle=True)
 
-    # patient level
+    # patient level - target, sex, size
     patient = df.groupby("patient_id")['target'].apply(lambda v: (v == 1).any())
     patient = pd.concat([patient, df.groupby('patient_id')['sex'].apply(lambda v: v.iloc[0])], axis=1)
     patient = pd.concat([patient, df.groupby("patient_id").size()], axis=1).rename({0: "size"}, axis=1)
