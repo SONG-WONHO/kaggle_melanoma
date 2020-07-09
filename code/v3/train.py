@@ -171,7 +171,7 @@ def main():
 
     # train test split
     for fold in range(CFG.n_folds):
-        print(f"Validation Fold: {fold}")
+        print(f"\nValidation Fold: {fold}")
         train_df = data_df[data_df['fold'] != fold].reset_index(drop=True)
         valid_df = data_df[data_df['fold'] == fold].reset_index(drop=True)
         print(f"... Train Shape: {train_df.shape}, Valid Shape: {valid_df.shape}")
