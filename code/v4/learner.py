@@ -12,7 +12,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 
-from data import BalanceBatchSampler, BalanceClassSampler
+from data import BalanceBatchSampler
 from model import get_model
 
 
@@ -58,18 +58,6 @@ class Learner(object):
             trn_data, batch_sampler=balance_sampler,
             num_workers=self.config.workers, pin_memory=True,
         )
-
-        ### BalanceClassSampler
-        """
-        balance_sampler = BalanceClassSampler(trn_data.df[:, 1])
-
-        train_loader = DataLoader(
-            trn_data,
-            batch_size=self.config.batch_size,
-            num_workers=self.config.workers, pin_memory=True,
-            sampler=balance_sampler
-        )
-        """
 
         valid_loader = DataLoader(
             val_data,
