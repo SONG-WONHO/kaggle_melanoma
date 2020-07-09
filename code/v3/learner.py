@@ -38,9 +38,8 @@ class AverageMeter(object):
 
 # loss function
 def loss_func(pred, target):
-    # weight = (target == 1).type(torch.int8) + 1
-    # return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
-    return nn.BCEWithLogitsLoss()(pred, target)
+    weight = (target == 1).type(torch.int8) * 9 + 1
+    return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
 
 
 class Learner(object):
