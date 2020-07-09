@@ -6,4 +6,6 @@ v1
 v2
     - Weighted Loss Function (weighted to melanoma)
 v3
-    - Best Loss vs Best Metric
+    - From best metric to best Loss: Don`t know well
+v4
+    - Transform test
