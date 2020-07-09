@@ -1,11 +1,11 @@
-v0
+v0: Default
     - Base
-v1
+v1: Sampler
     - BalanceBatchSampler: sample class to be stratified in batch level (Good)
     - BalanceSampler: upsample or downsample (Bad)
-v2
+v2: Custom loss
     - Weighted Loss Function (weighted to melanoma)
-v3
+v3: Best Metric vs Best Loss
     - From best metric to best Loss: Don`t know well
-v4
-    - Transform test
+v4: Scheduler
+    - CosineWarmUp
