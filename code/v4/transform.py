@@ -7,6 +7,7 @@ import torchtoolbox.transform as transforms
 import cv2
 
 
+### torchtoolbox
 def transform_v0(config):
     """ https://www.kaggle.com/nroman/melanoma-pytorch-starter-efficientnet/data?scriptVersionId=35726268
 
@@ -33,6 +34,7 @@ def transform_v0(config):
     return train_transforms, test_transforms
 
 
+### albumentations
 def transform_v1(config):
     """ default transforms
 

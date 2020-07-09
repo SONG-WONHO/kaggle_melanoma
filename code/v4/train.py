@@ -13,6 +13,7 @@ from utils import *
 from data import *
 from transform import get_transform
 from model import get_model
+from scheduler import CosineAnnealingLRWarmup
 from learner import Learner
 
 warnings.filterwarnings("ignore")
@@ -206,8 +207,10 @@ def main():
         optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)
 
         # get scheduler
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode='min', patience=1, verbose=False, factor=0.2)
+        # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        #     optimizer, mode='min', patience=1, verbose=False, factor=0.2)
+
+        scheduler = CosineAnnealingLRWarmup(optimizer, T_min=4, T_max=CFG.num_epochs)
 
         ### train related
         # train model

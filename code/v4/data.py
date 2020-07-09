@@ -100,9 +100,9 @@ class MelanomaDataset(Dataset):
         # Apply transformations
         if self.transforms:
             # if albumentations
-            im = self.transforms(image=im)['image']
+            # im = self.transforms(image=im)['image']
             # if torch toolbox
-            # im = self.transforms(im)
+            im = self.transforms(im)
 
         return im, label
 

@@ -96,7 +96,8 @@ class Learner(object):
                 self.save()
                 self.name = name
 
-            scheduler.step(metrics=vl_loss)
+            # scheduler.step(metrics=vl_loss)
+            scheduler.step()
 
         self.logger = logger
 
