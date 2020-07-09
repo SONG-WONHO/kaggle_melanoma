@@ -31,8 +31,8 @@ class CFG:
 
     # train
     batch_size = 64
-    learning_rate = 5e-4
-    num_epochs = 40
+    learning_rate = 2e-4
+    num_epochs = 20
 
     # etc
     seed = 42
