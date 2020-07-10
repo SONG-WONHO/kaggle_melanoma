@@ -28,9 +28,13 @@ class CosineAnnealingLRWarmup(_LRScheduler):
     def step(self, epoch=None, verbose=True):
         if epoch is None:
             epoch = self.last_epoch + 1
+
+        is_first = epoch // self.T_max < 1
+        epoch = epoch % self.T_max
+
         self.last_epoch = epoch
 
-        if self.last_epoch < self.T_min:
+        if (self.last_epoch < self.T_min) and is_first:
             new_lrs = [base_lr * ((self.last_epoch + 1) / self.T_min) for base_lr in self.base_lrs]
         else:
             new_lrs = [self.eta_min + (base_lr - self.eta_min) *
