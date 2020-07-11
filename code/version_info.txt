@@ -9,3 +9,4 @@ v3: Best Metric vs Best Loss
     - From best metric to best Loss: Don`t know well
 v4: Scheduler
     - CosineWarmUp
+v5: Stochastic Weight Averaging
