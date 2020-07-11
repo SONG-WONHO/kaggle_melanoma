@@ -10,3 +10,4 @@ v3: Best Metric vs Best Loss
 v4: Scheduler
     - CosineWarmUp
 v5: Stochastic Weight Averaging
+v6: Transform
