@@ -105,7 +105,7 @@ class Learner(object):
         self.logger = logger
 
         optimizer.swap_swa_sgd()
-        self.name += ".swa.pt"
+        self.name += ".swa"
         self.save()
 
     def predict(self, tst_data):
