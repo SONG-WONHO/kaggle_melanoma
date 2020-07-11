@@ -105,6 +105,7 @@ class Learner(object):
         self.logger = logger
 
         optimizer.swap_swa_sgd()
+        self.best_model = model
         self.name += ".swa"
         self.save()
 
