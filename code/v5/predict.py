@@ -131,7 +131,7 @@ def main():
         print(f"========== Fold: {fold} ==========")
         # load learner
         print("Load Model")
-        model_name = f'model.fold_{fold}.best.pt'
+        model_name = f'model.fold_{fold}.swa.pt'
         learner = Learner(CFG)
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
