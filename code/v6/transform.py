@@ -1,8 +1,5 @@
 from albumentations.pytorch import ToTensor
-from albumentations import (
-    Compose, HorizontalFlip, VerticalFlip, Normalize, Cutout, PadIfNeeded, RandomCrop, ToFloat,
-    RandomGridShuffle, ChannelShuffle, GridDropout, OneOf, RandomRotate90, RandomResizedCrop,
-)
+from albumentations import *
 import torchtoolbox.transform as transforms
 import cv2
 
@@ -63,7 +60,7 @@ def transform_v1(config):
 
 
 def transform_v2(config):
-    """ default transforms
+    """ Flip, Rotate
 
     Args:
         config: CFG
@@ -71,10 +68,8 @@ def transform_v2(config):
     Returns: train_tranforms, test_transforms
     """
     train_transforms = Compose([
-        RandomResizedCrop(224, 224, scale=(0.7, 1.0)),
-        HorizontalFlip(),
-        VerticalFlip(),
-
+        Flip(p=1),
+        RandomRotate90(p=1),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
