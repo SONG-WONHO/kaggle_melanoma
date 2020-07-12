@@ -88,6 +88,35 @@ def transform_v2(config):
     return train_transforms, test_transforms
 
 
+def transform_v3(config):
+    """ Flip, ShiftScaleRotate
+
+    Args:
+        config: CFG
+
+    Returns: train_tranforms, test_transforms
+    """
+    train_transforms = Compose([
+        Flip(p=1),
+        ShiftScaleRotate(p=1),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transforms = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transforms, test_transforms
+
+
 def get_transform(config):
     try:
         name = f"transform_v{config.transform_version}"
