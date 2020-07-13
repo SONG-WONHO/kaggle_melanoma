@@ -43,7 +43,7 @@ def transform_v99(config):
 
     test_transforms = Compose([
         Flip(p=1),
-        RandomRotate90(p=1),
+        # RandomRotate90(p=1),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
