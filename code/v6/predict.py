@@ -90,6 +90,8 @@ def main():
     if CFG.tta:
         CFG.sub_name = "tta." + CFG.sub_name
 
+    CFG.batch_size = 1
+
     pprint({k: v for k, v in dict(CFG.__dict__).items() if '__' not in k})
     print()
 
@@ -138,8 +140,8 @@ def main():
 
         else:
             test_preds = np.zeros(test_df.shape[0])
-            for _ in range(8):
-                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 8
+            for _ in range(4):
+                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
         print()
