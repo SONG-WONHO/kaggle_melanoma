@@ -32,6 +32,28 @@ def transform_v0(config):
 
 
 ### albumentations
+def transform_v99(config):
+    """ tta transforms
+
+        Args:
+            config: CFG
+
+        Returns: test_transforms
+        """
+
+    test_transforms = Compose([
+        Flip(p=1),
+        RandomRotate90(p=1),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return test_transforms
+
+
 def transform_v1(config):
     """ default transforms
 
