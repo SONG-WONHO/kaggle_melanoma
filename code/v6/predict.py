@@ -139,7 +139,7 @@ def main():
         else:
             test_preds = np.zeros(test_df.shape[0])
             for _ in range(8):
-                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 4
+                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 8
 
         final_preds += test_preds / CFG.n_folds
         print()
