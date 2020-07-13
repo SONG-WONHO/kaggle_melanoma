@@ -214,7 +214,6 @@ def transform_v6(config):
         RandomBrightnessContrast(0.1, 0.1, p=1),
         Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
         Cutout(num_holes=8, max_h_size=8, max_w_size=8, p=0.5),
-        Cutout(num_holes=16, max_h_size=16, max_w_size=16, p=0.5),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
