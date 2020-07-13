@@ -109,20 +109,17 @@ def main():
 
     # get transform
     print("Get Transform")
-    _, test_transforms = get_transform(CFG)
+    if CFG.tta:
+        CFG.transform_version = 99
+        test_transforms = get_transform(CFG)
+
+    else:
+        _, test_transforms = get_transform(CFG)
+
     print()
 
     # dataset
     tst_data = MelanomaDataset(CFG, test_df, test_transforms)
-
-    # if tta
-    tta_transforms = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-    tta_data = MelanomaDataset(CFG, test_df, tta_transforms)
 
     final_preds = np.zeros(test_df.shape[0])
 
@@ -142,7 +139,7 @@ def main():
         else:
             test_preds = np.zeros(test_df.shape[0])
             for _ in range(4):
-                test_preds += torch.sigmoid(learner.predict(tta_data).view(-1)).numpy() / 4
+                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
         print()
