@@ -170,7 +170,7 @@ def transform_v4(config):
 
 
 def transform_v5(config):
-    """ Flip, Rotate, RandomBrightnessContrast
+    """ Flip, Rotate, HueSaturationValue
 
     Args:
         config: CFG
