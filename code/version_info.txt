@@ -11,3 +11,4 @@ v4: Scheduler
     - CosineWarmUp
 v5: Stochastic Weight Averaging
 v6: Transform
+v7: Train from scratch
