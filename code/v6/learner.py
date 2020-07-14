@@ -80,7 +80,7 @@ class Learner(object):
                 np.round(vl_loss, 4),
                 np.round(vl_metric, 4),
                 np.round(vl_acc, 4),
-                optimizer.param_groups[0]['lr']]
+                np.round(optimizer.param_groups[0]['lr'], 8)]
 
             logger.to_csv(os.path.join(self.config.log_path, f'log.{self.name.split(".")[-1]}.csv'))
 
