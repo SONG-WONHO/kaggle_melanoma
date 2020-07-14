@@ -13,6 +13,7 @@ v4: Scheduler
 v5: Stochastic Weight Averaging
     - WIP
 v6: Transform Test
+    - Add SWA option, Not yet debug
     - WIP
 v7: Train from scratch
     - More and more (WIP)

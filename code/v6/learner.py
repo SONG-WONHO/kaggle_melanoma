@@ -96,10 +96,23 @@ class Learner(object):
                 self.save()
                 self.name = name
 
+            if self.config.swa and ((epoch + 1) % 4) == 0:
+                optimizer.update_swa()
+
             # scheduler.step(metrics=vl_loss)
             scheduler.step()
 
         self.logger = logger
+
+        if self.config.swa:
+            optimizer.swap_swa_sgd()
+
+            vl_loss, vl_metric, vl_acc = self._valid_one_epoch(valid_loader, model)
+            print(f"***** SWA Score - loss: {vl_loss:.4f} metric: {vl_metric:.4f} acc: {vl_acc:.4f}")
+
+            self.best_model = model
+            self.name += ".swa"
+            self.save()
 
     def predict(self, tst_data):
         model = self.best_model

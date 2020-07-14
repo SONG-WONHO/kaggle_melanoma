@@ -78,6 +78,8 @@ def main():
                         help=f"learning rate({CFG.learning_rate})")
     parser.add_argument('--num-epochs', default=CFG.num_epochs, type=int,
                         help=f"number of epochs({CFG.num_epochs})")
+    parser.add_argument("--swa",  action="store_true",
+                        help="do stochastic weight averaging")
 
     # etc
     parser.add_argument("--seed", default=CFG.seed, type=int,
@@ -107,6 +109,7 @@ def main():
     CFG.batch_size = args.batch_size
     CFG.learning_rate = args.learning_rate
     CFG.num_epochs = args.num_epochs
+    CFG.swa = args.swa
 
     # etc
     CFG.seed = args.seed
@@ -205,6 +208,9 @@ def main():
 
         # get optimizer
         optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)
+
+        if CFG.swa:
+            optimizer = torchcontrib.optim.SWA(optimizer)
 
         # get scheduler
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(

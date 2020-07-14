@@ -51,6 +51,7 @@ def main():
 
     # etc
     parser.add_argument('--tta', action='store_true', default=False)
+    parser.add_argument('--use-swa', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -66,6 +67,7 @@ def main():
     CFG.log_path = f"./log/v{args.version}/exp_{args.exp_id}/"
 
     CFG.tta = args.tta
+    CFG.use_swa = args.use_swa
 
     # get device
     CFG.device = get_device()
@@ -89,6 +91,9 @@ def main():
 
     if CFG.tta:
         CFG.sub_name = "tta." + CFG.sub_name
+
+    if CFG.use_swa:
+        CFG.sub_name = "swa." + CFG.sub_name
 
     CFG.batch_size = 1
 
@@ -130,7 +135,10 @@ def main():
         print(f"========== Fold: {fold} ==========")
         # load learner
         print("Load Model")
-        model_name = f'model.fold_{fold}.best.pt'
+        if CFG.use_swa:
+            model_name = f'model.fold_{fold}.swa.pt'
+        else:
+            model_name = f'model.fold_{fold}.best.pt'
         learner = Learner(CFG)
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
