@@ -49,6 +49,7 @@ def load_data(config):
     }
 
     train_df['target_multi'] = train_df['diagnosis'].map(mp)
+    test_df['target_multi'] = np.nan
 
     print(f"... Train Shape: {train_df.shape}, Test Shape: {test_df.shape}")
 
