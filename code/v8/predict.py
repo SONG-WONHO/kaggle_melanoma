@@ -136,12 +136,12 @@ def main():
 
         # prediction
         if not CFG.tta:
-            test_preds = torch.sigmoid(learner.predict(tst_data).view(-1)).numpy()
+            test_preds = nn.Softmax()(learner.predict(tst_data))[:, -1].numpy()
 
         else:
             test_preds = np.zeros(test_df.shape[0])
             for _ in range(4):
-                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 4
+                test_preds += nn.Softmax()(learner.predict(tst_data))[:, -1].numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
         print()
