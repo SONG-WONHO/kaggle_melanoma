@@ -8,6 +8,7 @@ from pprint import pprint
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torchcontrib
 
 from utils import *
 from data import *
