@@ -259,6 +259,8 @@ def transform_v7(config):
         ToTensor()
     ], p=1)
 
+    return train_transforms, test_transforms
+
 
 def get_transform(config):
     try:
