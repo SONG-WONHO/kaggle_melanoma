@@ -49,6 +49,33 @@ def load_data(config):
     }
 
     train_df['target_multi'] = train_df['diagnosis'].map(mp)
+    train_df['target_multi'] = train_df['anatom_site_general_challenge'].astype(str) + '_' + \
+                               train_df['target_multi'].astype(str)
+
+    mp = {
+        'torso_0': 0,
+        'lower extremity_0': 1,
+        'upper extremity_0': 2,
+        'torso_1': 3,
+        'head/neck_0': 4,
+        'lower extremity_1': 5,
+        'upper extremity_1': 6,
+        'nan_0': 6,
+        'palms/soles_0': 6,
+        'torso_2': 7,
+        'head/neck_1': 6,
+        'lower extremity_2': 7,
+        'oral/genital_0': 6,
+        'upper extremity_2': 7,
+        'head/neck_2': 7,
+        'nan_1': 6,
+        'nan_2': 7,
+        'palms/soles_2': 7,
+        'oral/genital_2': 7,
+        'palms/soles_1': 6
+    }
+    train_df['target_multi'] = train_df['target_multi'].map(mp)
+
     test_df['target_multi'] = np.nan
 
     print(f"... Train Shape: {train_df.shape}, Test Shape: {test_df.shape}")
