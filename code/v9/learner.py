@@ -143,13 +143,13 @@ class Learner(object):
 
         test_loader = tqdm(test_loader, leave=False)
 
-        for X_batch, _ in test_loader:
+        for X_batch, _, _ in test_loader:
             X_batch = X_batch.to(self.config.device)
 
             with torch.no_grad():
                 preds = model(X_batch)
 
-            preds = preds.cpu().detach()
+            preds, _ = preds.cpu().detach()
 
             pred_final.append(preds)
 

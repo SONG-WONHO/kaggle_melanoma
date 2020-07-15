@@ -37,6 +37,7 @@ def load_data(config):
         'melanoma': 2,
     }
     train_df['sub_1'] = train_df['diagnosis'].map(mp)
+    test_df['sub_1'] = np.nan
 
     # add sub targets 2 - anatom_site_general_challenge
     # - To Do
