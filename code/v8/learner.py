@@ -213,7 +213,7 @@ class Learner(object):
             valid_loader.set_description(f"valid ce:{losses.avg:.4f}")
 
         true_final = torch.cat(true_final, dim=0)
-        true_final = (true_final == 2).type(torch.int)
+        true_final = (true_final == self.config.num_targets - 1).type(torch.int)
 
         pred_final = torch.cat(pred_final, dim=0)
         pred_final = nn.Softmax()(pred_final)
