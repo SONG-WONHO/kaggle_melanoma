@@ -265,7 +265,7 @@ class Learner(object):
         vl_score = roc_auc_score(true_final.cpu().numpy(), pred_final.cpu().numpy())
         vl_acc = accuracy_score(true_final.cpu().numpy(), np.round(pred_final.cpu().numpy()))
 
-        return losses.avg, vl_score, vl_acc, losses_sub_1.avg, losses_sub_2
+        return losses.avg, vl_score, vl_acc, losses_sub_1.avg, losses_sub_2.avg
 
     def _create_logger(self):
         log_cols = ['tr_loss', 'tr_loss_sub_1', 'tr_loss_sub_2', 'val_loss', 'val_metric', 'val_acc', 'val_loss_sub_1', 'val_loss_sub_2', 'lr']
