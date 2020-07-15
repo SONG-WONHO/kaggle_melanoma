@@ -13,9 +13,10 @@ v4: Scheduler
 v5: Stochastic Weight Averaging
     - WIP
 v6: Transform Test
-    - Add SWA option, Not yet debug
+    - Add SWA option (Good, Need to experiment)
     - WIP
 v7: Train from scratch
     - More and more (WIP)
 v8: Change Target
     - BinaryClassification to MultiLabelClassification
+v9: Sub Target
