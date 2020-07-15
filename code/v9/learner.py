@@ -83,20 +83,13 @@ class Learner(object):
         # training
         best_metric = 1e-8
         for epoch in range(self.config.num_epochs):
-            tr_loss, tr_loss_sub_1, tr_loss_sub_2 = self._train_one_epoch(train_loader, model, optimizer, scheduler)
-            vl_loss, vl_metric, vl_acc, vl_loss_sub_1, vl_loss_sub_2 = self._valid_one_epoch(valid_loader, model)
+            tr_outputs = self._train_one_epoch(train_loader, model, optimizer, scheduler)
+            vl_outputs = self._valid_one_epoch(valid_loader, model)
 
             # logging
-            logger.loc[epoch] = [
-                np.round(tr_loss, 4),
-                np.round(tr_loss_sub_1, 4),
-                np.round(tr_loss_sub_2, 4),
-                np.round(vl_loss, 4),
-                np.round(vl_metric, 4),
-                np.round(vl_acc, 4),
-                np.round(vl_loss_sub_1, 4),
-                np.round(vl_loss_sub_2, 4),
-                np.round(optimizer.param_groups[0]['lr'], 8)]
+            logger.log[epoch] = [np.round(v, 4) for v in tr_outputs] +\
+                                [np.round(v, 4) for v in vl_outputs] +\
+                                [np.round(optimizer.param_groups[0]['lr'], 8)]
 
             logger.to_csv(os.path.join(self.config.log_path, f'log.{self.name.split(".")[-1]}.csv'))
 
@@ -123,8 +116,8 @@ class Learner(object):
         if self.config.swa:
             optimizer.swap_swa_sgd()
 
-            vl_loss, vl_metric, vl_acc, vl_loss_sub_1, vl_loss_sub_2 = self._valid_one_epoch(valid_loader, model)
-            print(f"\n ***** SWA Score - loss: {vl_loss:.4f} metric: {vl_metric:.4f} acc: {vl_acc:.4f}\n")
+            vl_outputs = self._valid_one_epoch(valid_loader, model)
+            print(f"\n ***** SWA Score - loss: {vl_outputs[0]:.4f} metric: {vl_outputs[1]:.4f} acc: {vl_outputs[2]:.4f}\n")
 
             self.best_model = model
             self.name += ".swa"
@@ -230,6 +223,7 @@ class Learner(object):
         losses_sub_1 = AverageMeter()
         losses_sub_2 = AverageMeter()
         true_final, pred_final = [], []
+        sub_1_final, sub_2_final = [], []
 
         model.eval()
 
@@ -255,6 +249,8 @@ class Learner(object):
 
             true_final.append(y_batch.cpu())
             pred_final.append(preds.detach().cpu())
+            sub_1_final.append(p_sub_1.detach().cpu())
+            sub_2_final.append(p_sub_2.detach().cpu())
 
             valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, sub 2: {losses_sub_2.avg:.4f}")
 
@@ -265,10 +261,44 @@ class Learner(object):
         vl_score = roc_auc_score(true_final.cpu().numpy(), pred_final.cpu().numpy())
         vl_acc = accuracy_score(true_final.cpu().numpy(), np.round(pred_final.cpu().numpy()))
 
-        return losses.avg, vl_score, vl_acc, losses_sub_1.avg, losses_sub_2.avg
+        # sub
+        sub_1_final = torch.cat(sub_1_final, dim=0)
+        sub_1_final = nn.Softmax()(sub_1_final)[:, -1]
+
+        sub_2_final = torch.cat(sub_2_final, dim=0)
+        sub_2_final = nn.Softmax()(sub_2_final)[:, -1]
+
+        sub_1_score = roc_auc_score(true_final.cpu().numpy(), sub_1_final.cpu().numpy())
+        sub_2_score = roc_auc_score(true_final.cpu().numpy(), sub_2_final.cpu().numpy())
+
+        # ensemble - original, sub_1
+        en_1 = (pred_final.cpu().numpy() + sub_1_final.cpu().numpy()) / 2
+        en_1_score = roc_auc_score(true_final.cpu().numpy(), en_1)
+
+        # ensemble - original, sub_2
+        en_2 = (pred_final.cpu().numpy() + sub_2_final.cpu().numpy()) / 2
+        en_2_score = roc_auc_score(true_final.cpu().numpy(), en_2)
+
+        # ensemble - sub_1, sub_2
+        en_3 = (sub_1_final.cpu().numpy() + sub_2_final.cpu().numpy()) / 2
+        en_3_score = roc_auc_score(true_final.cpu().numpy(), en_3)
+
+        # ensemble - original, sub_1, sub_2
+        en_4 = (pred_final.cpu().numpy() + sub_1_final.cpu().numpy() + sub_2_final.cpu().numpy()) / 3
+        en_4_score = roc_auc_score(true_final.cpu().numpy(), en_4)
+
+        return (
+            losses.avg, vl_score, vl_acc,
+            losses_sub_1.avg, losses_sub_2.avg, sub_1_score, sub_2_score,
+            en_1_score, en_2_score, en_3_score, en_4_score
+        )
 
     def _create_logger(self):
-        log_cols = ['tr_loss', 'tr_loss_sub_1', 'tr_loss_sub_2', 'val_loss', 'val_metric', 'val_acc', 'val_loss_sub_1', 'val_loss_sub_2', 'lr']
+        log_cols = ['tr_loss', 'tr_loss_sub_1', 'tr_loss_sub_2',
+                    'val_loss', 'val_metric', 'val_acc',
+                    'val_loss_sub_1', 'val_loss_sub_2', 'sub_1_score', 'sub_2_score',
+                    'en1', 'en2', 'en3', 'en4'
+                    'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
 
     def _cal_metrics(self, pred, true):
