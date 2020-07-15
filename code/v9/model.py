@@ -18,11 +18,21 @@ class BaseModel(nn.Module):
             'efficientnet-b5': 2048,
             'efficientnet-b6': 2304,
             'efficientnet-b7': 2560}[config.backbone_name]
-        self.model._fc = nn.Linear(in_features=self.c, out_features=config.num_targets, bias=True)
+        self.out = nn.Linear(in_features=self.c, out_features=config.num_targets, bias=True)
+        self.sub_1 = nn.Linear(in_features=self.c, out_features=3, bias=True)
 
     def forward(self, x):
-        outputs = self.model(x)
-        return outputs
+        # features
+        feat = self.model.extract_features(x)
+        feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
+
+        # original outputs
+        outputs = self.out(feat)
+
+        # sub outputs
+        outputs_sub1 = self.sub_1(feat)
+
+        return outputs, outputs_sub1
 
 
 def get_model(config):

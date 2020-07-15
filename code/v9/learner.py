@@ -42,6 +42,10 @@ def loss_func(pred, target):
     return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
 
 
+def loss_func_sub(pred, target):
+    return nn.CrossEntropyLoss()(pred, target)
+
+
 class Learner(object):
     def __init__(self, config):
         self.config = config
@@ -79,15 +83,17 @@ class Learner(object):
         # training
         best_metric = 1e-8
         for epoch in range(self.config.num_epochs):
-            tr_loss = self._train_one_epoch(train_loader, model, optimizer, scheduler)
-            vl_loss, vl_metric, vl_acc = self._valid_one_epoch(valid_loader, model)
+            tr_loss, tr_loss_sub_1 = self._train_one_epoch(train_loader, model, optimizer, scheduler)
+            vl_loss, vl_metric, vl_acc, vl_loss_sub_1 = self._valid_one_epoch(valid_loader, model)
 
             # logging
             logger.loc[epoch] = [
                 np.round(tr_loss, 4),
+                np.round(tr_loss_sub_1, 4),
                 np.round(vl_loss, 4),
                 np.round(vl_metric, 4),
                 np.round(vl_acc, 4),
+                np.round(vl_loss_sub_1, 4),
                 np.round(optimizer.param_groups[0]['lr'], 8)]
 
             logger.to_csv(os.path.join(self.config.log_path, f'log.{self.name.split(".")[-1]}.csv'))
@@ -115,8 +121,8 @@ class Learner(object):
         if self.config.swa:
             optimizer.swap_swa_sgd()
 
-            vl_loss, vl_metric, vl_acc = self._valid_one_epoch(valid_loader, model)
-            print(f"***** SWA Score - loss: {vl_loss:.4f} metric: {vl_metric:.4f} acc: {vl_acc:.4f}")
+            vl_loss, vl_metric, vl_acc, vl_loss_sub_1 = self._valid_one_epoch(valid_loader, model)
+            print(f"\n ***** SWA Score - loss: {vl_loss:.4f} metric: {vl_metric:.4f} acc: {vl_acc:.4f}\n")
 
             self.best_model = model
             self.name += ".swa"
@@ -183,54 +189,64 @@ class Learner(object):
 
     def _train_one_epoch(self, train_loader, model, optimizer, scheduler):
         losses = AverageMeter()
+        losses_sub_1 = AverageMeter()
 
         model.train()
 
         train_iterator = tqdm(train_loader, leave=False)
-        for X_batch, y_batch in train_iterator:
+        for X_batch, y_batch, y_sub_1 in train_iterator:
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
+            y_sub_1 = y_sub_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
-            preds = model(X_batch)
+            preds, p_sub_1 = model(X_batch)
 
             loss = loss_func(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
+            loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
+            losses_sub_1.update(loss_sub_1.item(), batch_size)
+
             optimizer.zero_grad()
-            loss.backward()
+            (loss + losses_sub_1).backward()
             optimizer.step()
 
             train_iterator.set_description(
-                f"train bce:{losses.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
+                f"train bce:{losses.avg:.4f}, "
+                f"sub 1: {losses_sub_1:.4f}, "
+                f"lr:{optimizer.param_groups[0]['lr']:.6f}")
 
-        return losses.avg
+        return losses.avg, losses_sub_1.avg
 
     def _valid_one_epoch(self, valid_loader, model):
         losses = AverageMeter()
+        losses_sub_1 = AverageMeter()
         true_final, pred_final = [], []
 
         model.eval()
 
         valid_loader = tqdm(valid_loader, leave=False)
-        for i, (X_batch, y_batch) in enumerate(valid_loader):
+        for i, (X_batch, y_batch, y_sub_1) in enumerate(valid_loader):
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
+            y_sub_1 = y_sub_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
             with torch.no_grad():
-                preds = model(X_batch)
+                preds, p_sub_1 = model(X_batch)
                 loss = loss_func(preds.view(-1), y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
+
+                loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
+                losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             true_final.append(y_batch.cpu())
             pred_final.append(preds.detach().cpu())
 
-            losses.update(loss.item(), batch_size)
-
-            valid_loader.set_description(f"valid ce:{losses.avg:.4f}")
+            valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1:.4f}")
 
         true_final = torch.cat(true_final, dim=0)
         pred_final = torch.cat(pred_final, dim=0).view(-1)
@@ -239,10 +255,10 @@ class Learner(object):
         vl_score = roc_auc_score(true_final.cpu().numpy(), pred_final.cpu().numpy())
         vl_acc = accuracy_score(true_final.cpu().numpy(), np.round(pred_final.cpu().numpy()))
 
-        return losses.avg, vl_score, vl_acc
+        return losses.avg, vl_score, vl_acc, losses_sub_1.avg
 
     def _create_logger(self):
-        log_cols = ['tr_loss', 'val_loss', 'val_metric', 'val_acc', 'lr']
+        log_cols = ['tr_loss', 'tr_loss_sub_1', 'val_loss', 'val_metric', 'val_acc', 'val_loss_sub_1', 'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
 
     def _cal_metrics(self, pred, true):

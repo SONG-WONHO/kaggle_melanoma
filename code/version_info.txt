@@ -3,6 +3,7 @@ v0: Default
 v1: Sampler
     - BalanceBatchSampler: sample class to be stratified in batch level (Good)
     - BalanceSampler: upsample or downsample (Bad)
+    - Sampler is bad when use cosine scehudler
 v2: Custom loss
     - Weighted Loss Function (weighted to melanoma) (Bad)
 v3: Best Metric vs Best Loss

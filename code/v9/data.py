@@ -29,6 +29,18 @@ def load_data(config):
     train_df['image_path'] = data_path + "/train/" + train_df['image_name'] + ".jpg"
     test_df['image_path'] = data_path + "/test/" + test_df['image_name'] + ".jpg"
 
+    # add sub targets 1 - diagnosis
+    mp = {
+        'unknown': 0, 'seborrheic keratosis': 0, 'lentigo NOS': 0, 'lichenoid keratosis': 0,
+        'solar lentigo': 0, 'cafe-au-lait macule': 0, 'atypical melanocytic proliferation': 0,
+        'nevus': 1,
+        'melanoma': 2,
+    }
+    train_df['sub_1'] = train_df['diagnosis'].map(mp)
+
+    # add sub targets 2 - anatom_site_general_challenge
+    # - To Do
+
     if config.debug:
         train_df = train_df.sample(40)
         test_df = test_df.sample(40)
@@ -87,14 +99,14 @@ def split_data(config, df):
 class MelanomaDataset(Dataset):
     def __init__(self, config, df, transforms=None):
         self.config = config
-        self.df = df[['image_path', 'target']].values
+        self.df = df[['image_path', 'target', 'sub_1']].values
         self.transforms = transforms
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        fn, label = self.df[idx]
+        fn, label, sub_1 = self.df[idx]
         im = cv2.imread(fn)
 
         # Apply transformations
@@ -104,7 +116,7 @@ class MelanomaDataset(Dataset):
             # if torch toolbox
             # im = self.transforms(im)
 
-        return im, label
+        return im, label, sub_1
 
 
 # noinspection PyMissingConstructor
