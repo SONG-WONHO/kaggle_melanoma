@@ -214,9 +214,7 @@ class Learner(object):
             optimizer.step()
 
             train_iterator.set_description(
-                f"train bce:{losses.avg:.4f}, " +\
-                f"sub 1: {losses_sub_1:.4f}, " +\
-                f"lr:{optimizer.param_groups[0]['lr']:.6f}")
+                f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1:.4f} lr:{optimizer.param_groups[0]['lr']:.6f}")
 
         return losses.avg, losses_sub_1.avg
 
