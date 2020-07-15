@@ -210,7 +210,7 @@ class Learner(object):
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             optimizer.zero_grad()
-            (loss + losses_sub_1).backward()
+            (loss + loss_sub_1).backward()
             optimizer.step()
 
             train_iterator.set_description(
