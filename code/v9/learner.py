@@ -214,7 +214,7 @@ class Learner(object):
             optimizer.step()
 
             train_iterator.set_description(
-                f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1:.4f} lr:{optimizer.param_groups[0]['lr']:.6f}")
+                f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f} lr:{optimizer.param_groups[0]['lr']:.6f}")
 
         return losses.avg, losses_sub_1.avg
 
@@ -244,7 +244,7 @@ class Learner(object):
             true_final.append(y_batch.cpu())
             pred_final.append(preds.detach().cpu())
 
-            valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1:.4f}")
+            valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}")
 
         true_final = torch.cat(true_final, dim=0)
         pred_final = torch.cat(pred_final, dim=0).view(-1)
