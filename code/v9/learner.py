@@ -87,7 +87,7 @@ class Learner(object):
             vl_outputs = self._valid_one_epoch(valid_loader, model)
 
             # logging
-            logger.log[epoch] = [np.round(v, 4) for v in tr_outputs] +\
+            logger.loc[epoch] = [np.round(v, 4) for v in tr_outputs] +\
                                 [np.round(v, 4) for v in vl_outputs] +\
                                 [np.round(optimizer.param_groups[0]['lr'], 8)]
 
