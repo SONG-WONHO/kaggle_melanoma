@@ -49,9 +49,11 @@ def load_data(config):
     }
 
     train_df['target_multi'] = train_df['diagnosis'].map(mp)
+
+    """
     train_df['target_multi'] = train_df['anatom_site_general_challenge'].astype(str) + '_' + \
                                train_df['target_multi'].astype(str)
-
+    
     mp = {
         'torso_0': 0,
         'lower extremity_0': 1,
@@ -75,6 +77,7 @@ def load_data(config):
         'palms/soles_1': 6
     }
     train_df['target_multi'] = train_df['target_multi'].map(mp)
+    """
 
     test_df['target_multi'] = np.nan
 
