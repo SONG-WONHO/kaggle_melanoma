@@ -53,10 +53,18 @@ class Learner(object):
     def train(self, trn_data, val_data, model, optimizer, scheduler):
 
         ### BalanceBatchSampler
+        """
         balance_sampler = BalanceBatchSampler(trn_data.df[:, 1], self.config.batch_size)
 
         train_loader = DataLoader(
             trn_data, batch_sampler=balance_sampler,
+            num_workers=self.config.workers, pin_memory=True,
+        )
+        """
+
+        train_loader = DataLoader(
+            trn_data,
+            batch_size=self.config.batch_size, shuffle=True,
             num_workers=self.config.workers, pin_memory=True,
         )
 
