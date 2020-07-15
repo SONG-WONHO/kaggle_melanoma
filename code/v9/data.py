@@ -40,7 +40,16 @@ def load_data(config):
     test_df['sub_1'] = np.nan
 
     # add sub targets 2 - anatom_site_general_challenge
-    # - To Do
+    train_df['sub_2'] = train_df['anatom_site_general_challenge'].astype(str) + "_" + train_df['sub_1'].astype(str)
+
+    mp = {
+        'torso_0': 0, 'lower extremity_0': 1, 'upper extremity_0': 2, 'torso_1': 3, 'head/neck_0': 4,
+        'lower extremity_1': 5, 'upper extremity_1': 6, 'nan_0': 6, 'palms/soles_0': 6, 'torso_2': 7,
+        'head/neck_1': 6, 'lower extremity_2': 7, 'oral/genital_0': 6, 'upper extremity_2': 7,
+        'head/neck_2': 7, 'nan_1': 6, 'nan_2': 7, 'palms/soles_2': 7, 'oral/genital_2': 7, 'palms/soles_1': 6
+    }
+    train_df['sub_2'] = train_df['sub_2'].map(mp)
+    test_df['sub_2'] = np.nan
 
     if config.debug:
         train_df = train_df.sample(40)
@@ -100,14 +109,14 @@ def split_data(config, df):
 class MelanomaDataset(Dataset):
     def __init__(self, config, df, transforms=None):
         self.config = config
-        self.df = df[['image_path', 'target', 'sub_1']].values
+        self.df = df[['image_path', 'target', 'sub_1', 'sub_2']].values
         self.transforms = transforms
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        fn, label, sub_1 = self.df[idx]
+        fn, label, sub_1, sub_2 = self.df[idx]
         im = cv2.imread(fn)
 
         # Apply transformations
@@ -117,7 +126,7 @@ class MelanomaDataset(Dataset):
             # if torch toolbox
             # im = self.transforms(im)
 
-        return im, label, sub_1
+        return im, label, sub_1, sub_2
 
 
 # noinspection PyMissingConstructor

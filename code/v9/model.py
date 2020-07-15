@@ -20,6 +20,7 @@ class BaseModel(nn.Module):
             'efficientnet-b7': 2560}[config.backbone_name]
         self.out = nn.Linear(in_features=self.c, out_features=config.num_targets, bias=True)
         self.sub_1 = nn.Linear(in_features=self.c, out_features=3, bias=True)
+        self.sub_2 = nn.Linear(in_features=self.c, out_features=8, bias=True)
 
     def forward(self, x):
         # features
@@ -31,8 +32,9 @@ class BaseModel(nn.Module):
 
         # sub outputs
         outputs_sub1 = self.sub_1(feat)
+        outputs_sub2 = self.sub_2(feat)
 
-        return outputs, outputs_sub1
+        return outputs, outputs_sub1, outputs_sub2
 
 
 def get_model(config):
