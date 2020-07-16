@@ -133,6 +133,8 @@ class Learner(object):
         )
 
         pred_final = []
+        sub_1_final = []
+        sub_2_final = []
 
         model.eval()
 
@@ -142,15 +144,21 @@ class Learner(object):
             X_batch = X_batch.to(self.config.device)
 
             with torch.no_grad():
-                preds, _, _ = model(X_batch)
+                preds, p_sub_1, p_sub_2 = model(X_batch)
 
-            preds = preds.cpu().detach()
-
-            pred_final.append(preds)
+            pred_final.append(preds.detach().cpu())
+            sub_1_final.append(p_sub_1.detach().cpu())
+            sub_2_final.append(p_sub_2.detach().cpu())
 
         pred_final = torch.cat(pred_final, dim=0)
 
-        return pred_final
+        sub_1_final = torch.cat(sub_1_final, dim=0)
+        sub_1_final = nn.Softmax()(sub_1_final)[:, -1]
+
+        sub_2_final = torch.cat(sub_2_final, dim=0)
+        sub_2_final = nn.Softmax()(sub_2_final)[:, -1]
+
+        return pred_final, sub_1_final, sub_2_final
 
     def save(self):
         if self.best_model is None:
