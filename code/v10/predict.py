@@ -155,7 +155,7 @@ def main():
             test_preds = sub_1
 
             # case 3
-            # test_preds = (preds + sub_1) / 2
+            test_preds = (preds + sub_1) / 2
 
         else:
             test_preds = np.zeros(test_df.shape[0])
