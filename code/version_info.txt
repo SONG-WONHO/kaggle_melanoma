@@ -32,9 +32,14 @@ v8: Change Target
 
 v9: Sub Target
     - Sub Target 1: diagnosis (Good)
-    - Sub Target 2a: anatom_site_general_challenge + diagnosis (WIP)
-    - Sub Target 2b: anatom_site_general_challenge
-    - Must check dependency with meta features
+    - Sub Target 2: anatom_site_general_challenge + diagnosis (Good or Bad, overfitting)
+    - Must check dependency with meta features.
+    - sub target 2 lead to overfit, so there are needs for limitation of overfitting.
+
+v10: Aux Target
+    - Base model: Multitask model (binary target + sub target 1)
+    - Aux target: anatom_site_general_challenge (WIP)
+    - Must check dependency with meta features.
 
 
 To Do
