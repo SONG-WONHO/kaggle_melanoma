@@ -38,7 +38,7 @@ v9: Sub Target
 
 v10: Aux Target
     - Base model: Multitask model (binary target + sub target 1)
-    - Aux target: anatom_site_general_challenge (WIP)
+    - Aux target: anatom_site_general_challenge (overfitting)
     - Must check dependency with meta features.
 
 
