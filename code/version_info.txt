@@ -1,23 +1,44 @@
 v0: Default
     - Base
+
 v1: Sampler
     - BalanceBatchSampler: sample class to be stratified in batch level (Good)
     - BalanceSampler: upsample or downsample (Bad)
     - Sampler is bad when use cosine scehudler
+
 v2: Custom loss
     - Weighted Loss Function (weighted to melanoma) (Bad)
+
 v3: Best Metric vs Best Loss
     - From best metric to best Loss: Don`t know well
     - Need to change loss functions
+
 v4: Scheduler
     - CosineWarmUp (Good)
+
 v5: Stochastic Weight Averaging
-    - WIP
+    - Done (Good, Need to experiment)
+
 v6: Transform Test
-    - Add SWA option (Good, Need to experiment)
+    - v5, Add SWA option (Good, Need to experiment)
     - WIP
+
 v7: Train from scratch
     - More and more (WIP)
+
 v8: Change Target
     - BinaryClassification to MultiLabelClassification
+    - Need more experiment, lb isn`t aligned to cv scores.
+
 v9: Sub Target
+    - Sub Target 1: diagnosis (Good)
+    - Sub Target 2a: anatom_site_general_challenge + diagnosis (WIP)
+    - Sub Target 2b: anatom_site_general_challenge
+    - Must check dependency with meta features
+
+
+To Do
+    - Label Smoothing
+    - Focal Loss
+    - Dropout & Weight Decay in Optimizer
+    - Cutmix or mixup to 0 label, if good extend to sub targets
