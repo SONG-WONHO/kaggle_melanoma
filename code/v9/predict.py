@@ -144,12 +144,19 @@ def main():
 
         # prediction
         if not CFG.tta:
-            test_preds = torch.sigmoid(learner.predict(tst_data).view(-1)).numpy()
+            preds, sub_1, sub_2 = learner.predict(tst_data)
+            preds = torch.sigmoid(preds.view(-1)).numpy()
+            sub_1 = sub_1.view(-1).numpy()
+            sub_2 = sub_2.view(-1).numpy()
+
+            print(preds.shape, sub_1.shape, sub_2.shape)
+
+            test_preds = (preds + sub_1 + sub_2) / 3
 
         else:
             test_preds = np.zeros(test_df.shape[0])
             for _ in range(4):
-                test_preds += torch.sigmoid(learner.predict(tst_data).view(-1)).numpy() / 4
+                test_preds += torch.sigmoid(learner.predict(tst_data)[0].view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
         print()
