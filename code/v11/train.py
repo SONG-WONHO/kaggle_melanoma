@@ -73,9 +73,9 @@ def main():
                         help=f"model name({CFG.model_name})")
     parser.add_argument('--backbone-name', default=CFG.backbone_name,
                         help=f"backbone name({CFG.backbone_name})")
-    parser.add_argument('--dropout', default=CFG.dropout,
+    parser.add_argument('--dropout', default=CFG.dropout, type=float,
                         help=f"dropout({CFG.dropout})")
-    parser.add_argument('--weight-decay', default=CFG.weight_decay,
+    parser.add_argument('--weight-decay', default=CFG.weight_decay, type=float,
                         help=f"weight decay({CFG.weight_decay})")
 
     # learning
