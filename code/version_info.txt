@@ -38,7 +38,7 @@ v9: Sub Target
 
 v10: Aux Target
     - Base model: Multitask model (binary target + sub target 1)
-    - Aux target: anatom_site_general_challenge (overfitting)
+    - Aux target: anatom_site_general_challenge (Bad, overfitting)
     - Must check dependency with meta features.
 
 v11: Handle Overfitting
@@ -49,5 +49,4 @@ v11: Handle Overfitting
 To Do
     - Label Smoothing
     - Focal Loss
-    - Dropout & Weight Decay in Optimizer
     - Cutmix or mixup to 0 label, if good extend to sub targets
