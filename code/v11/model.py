@@ -18,6 +18,7 @@ class BaseModel(nn.Module):
             'efficientnet-b5': 2048,
             'efficientnet-b6': 2304,
             'efficientnet-b7': 2560}[config.backbone_name]
+        self.dropout = nn.Dropout(config.dropout)
         self.out = nn.Linear(in_features=self.c, out_features=config.num_targets, bias=True)
         self.sub_1 = nn.Linear(in_features=self.c, out_features=3, bias=True)
         self.aux_1 = nn.Linear(in_features=self.c, out_features=7, bias=True)
@@ -26,6 +27,7 @@ class BaseModel(nn.Module):
         # features
         feat = self.model.extract_features(x)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
+        feat = self.dropout(feat)
 
         # original outputs
         outputs = self.out(feat)
