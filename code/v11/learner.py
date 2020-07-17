@@ -143,7 +143,7 @@ class Learner(object):
             X_batch = X_batch.to(self.config.device)
 
             with torch.no_grad():
-                preds, p_sub_1, _ = model(X_batch)
+                preds, p_sub_1 = model(X_batch)
 
             pred_final.append(preds.detach().cpu())
             sub_1_final.append(p_sub_1.detach().cpu())
