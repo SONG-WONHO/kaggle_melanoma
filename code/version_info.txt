@@ -45,8 +45,9 @@ v11: Handle Overfitting
     - Dropout
     - Weight Decay
 
+v12: LabelSmoothingLoss
+
 
 To Do
-    - Label Smoothing
     - Focal Loss
     - Cutmix or mixup to 0 label, if good extend to sub targets
