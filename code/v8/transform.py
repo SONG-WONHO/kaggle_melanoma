@@ -231,6 +231,37 @@ def transform_v6(config):
     return train_transforms, test_transforms
 
 
+def transform_v7(config):
+    """ RandomResizedCrop, Flip, Rotate, RandomBrightnessContrast
+
+    Args:
+        config: CFG
+
+    Returns: train_tranforms, test_transforms
+    """
+    train_transforms = Compose([
+        RandomResizedCrop(224, 224, (0.7, 1), p=1),
+        Flip(p=1),
+        RandomRotate90(p=1),
+        RandomBrightnessContrast(0.1, 0.1, p=1),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transforms = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transforms, test_transforms
+
+
 def get_transform(config):
     try:
         name = f"transform_v{config.transform_version}"
