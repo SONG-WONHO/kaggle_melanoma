@@ -21,7 +21,6 @@ class BaseModel(nn.Module):
         self.dropout = nn.Dropout(config.dropout)
         self.out = nn.Linear(in_features=self.c, out_features=config.num_targets, bias=True)
         self.sub_1 = nn.Linear(in_features=self.c, out_features=3, bias=True)
-        self.aux_1 = nn.Linear(in_features=self.c, out_features=7, bias=True)
 
     def forward(self, x):
         # features
@@ -35,10 +34,7 @@ class BaseModel(nn.Module):
         # sub outputs
         outputs_sub1 = self.sub_1(feat)
 
-        # aux outputs
-        outputs_aux1 = self.aux_1(feat)
-
-        return outputs, outputs_sub1, outputs_aux1
+        return outputs, outputs_sub1
 
 
 def get_model(config):

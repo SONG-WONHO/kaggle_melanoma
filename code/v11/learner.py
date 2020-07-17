@@ -188,20 +188,18 @@ class Learner(object):
     def _train_one_epoch(self, train_loader, model, optimizer, scheduler):
         losses = AverageMeter()
         losses_sub_1 = AverageMeter()
-        losses_aux_1 = AverageMeter()
 
         model.train()
 
         train_iterator = tqdm(train_loader, leave=False)
-        for X_batch, y_batch, y_sub_1, y_aux_1 in train_iterator:
+        for X_batch, y_batch, y_sub_1, _ in train_iterator:
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
-            y_aux_1 = y_aux_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
-            preds, p_sub_1, p_aux_1 = model(X_batch)
+            preds, p_sub_1 = model(X_batch)
 
             loss = loss_func(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
@@ -209,52 +207,44 @@ class Learner(object):
             loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
-            loss_aux_1 = loss_func_sub(p_aux_1, y_aux_1.view(-1))
-            losses_aux_1.update(loss_aux_1.item(), batch_size)
-
             optimizer.zero_grad()
-            (loss + loss_sub_1 + loss_aux_1).backward()
+            (loss + loss_sub_1).backward()
             optimizer.step()
 
             train_iterator.set_description(
-                f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, aux 1: {losses_aux_1.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
+                f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
 
-        return losses.avg, losses_sub_1.avg, losses_aux_1.avg
+        return losses.avg, losses_sub_1.avg
 
     def _valid_one_epoch(self, valid_loader, model):
         losses = AverageMeter()
         losses_sub_1 = AverageMeter()
-        losses_aux_1 = AverageMeter()
         true_final, pred_final = [], []
         sub_1_final = []
 
         model.eval()
 
         valid_loader = tqdm(valid_loader, leave=False)
-        for i, (X_batch, y_batch, y_sub_1, y_aux_1) in enumerate(valid_loader):
+        for i, (X_batch, y_batch, y_sub_1, _) in enumerate(valid_loader):
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
-            y_aux_1 = y_aux_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
             with torch.no_grad():
-                preds, p_sub_1, p_aux_1 = model(X_batch)
+                preds, p_sub_1 = model(X_batch)
                 loss = loss_func(preds.view(-1), y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
 
                 loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
                 losses_sub_1.update(loss_sub_1.item(), batch_size)
 
-                loss_aux_1 = loss_func_sub(p_aux_1, y_aux_1.view(-1))
-                losses_aux_1.update(loss_aux_1.item(), batch_size)
-
             true_final.append(y_batch.cpu())
             pred_final.append(preds.detach().cpu())
             sub_1_final.append(p_sub_1.detach().cpu())
 
-            valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, aux 1: {losses_aux_1.avg:.4f}")
+            valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}")
 
         true_final = torch.cat(true_final, dim=0)
         pred_final = torch.cat(pred_final, dim=0).view(-1)
@@ -274,14 +264,14 @@ class Learner(object):
 
         return (
             losses.avg, vl_score, vl_acc,
-            losses_sub_1.avg, sub_1_score, losses_aux_1.avg,
+            losses_sub_1.avg, sub_1_score,
             en_1_score
         )
 
     def _create_logger(self):
-        log_cols = ['tr_loss', 'tr_loss_sub_1', 'tr_loss_aux_1',
+        log_cols = ['tr_loss', 'tr_loss_sub_1',
                     'val_loss', 'val_metric', 'val_acc',
-                    'val_loss_sub_1', 'sub_1_score', 'val_loss_aux_1',
+                    'val_loss_sub_1', 'sub_1_score',
                     'en1',
                     'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
