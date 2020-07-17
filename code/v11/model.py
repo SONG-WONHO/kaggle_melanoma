@@ -26,7 +26,7 @@ class BaseModel(nn.Module):
         # features
         feat = self.model.extract_features(x)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
-        feat = self.dropout(feat)
+        # feat = self.dropout(feat)
 
         # original outputs
         outputs = self.out(feat)
