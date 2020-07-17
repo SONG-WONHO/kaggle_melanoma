@@ -41,6 +41,10 @@ v10: Aux Target
     - Aux target: anatom_site_general_challenge (overfitting)
     - Must check dependency with meta features.
 
+v11: Handle Overfitting
+    - Dropout
+    - Weight Decay
+
 
 To Do
     - Label Smoothing
