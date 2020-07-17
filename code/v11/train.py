@@ -29,6 +29,8 @@ class CFG:
     # model
     model_name = "BaseModel"
     backbone_name = "efficientnet-b0"
+    dropout = 0.2
+    weight_decay = 0.001
 
     # train
     batch_size = 64
@@ -71,6 +73,10 @@ def main():
                         help=f"model name({CFG.model_name})")
     parser.add_argument('--backbone-name', default=CFG.backbone_name,
                         help=f"backbone name({CFG.backbone_name})")
+    parser.add_argument('--dropout', default=CFG.dropout,
+                        help=f"dropout({CFG.dropout})")
+    parser.add_argument('--weight-decay', default=CFG.weight_decay,
+                        help=f"weight decay({CFG.weight_decay})")
 
     # learning
     parser.add_argument('--batch-size', default=CFG.batch_size, type=int,
@@ -105,6 +111,8 @@ def main():
     # model
     CFG.model_name = args.model_name
     CFG.backbone_name = args.backbone_name
+    CFG.dropout = args.dropout
+    CFG.weight_decay = args.weight_decay
 
     # learning
     CFG.batch_size = args.batch_size
@@ -208,7 +216,18 @@ def main():
             model = nn.DataParallel(model)
 
         # get optimizer
-        optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)
+        module_names = list(model.state_dict())
+        no_decay = ['bias']
+        for m in module_names:
+            if 'running_mean' in m:
+                no_decay.append(m.split('.running_mean')[0])
+        param_optimizer = list(model.named_parameters())
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+             'weight_decay': CFG.weight_decay},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
+             'weight_decay': 0.0}]
+        optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
 
         if CFG.swa:
             optimizer = torchcontrib.optim.SWA(optimizer)
