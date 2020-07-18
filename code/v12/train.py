@@ -40,7 +40,7 @@ class CFG:
     # etc
     seed = 42
     workers = 1
-    num_targets = 1
+    num_targets = 2
     debug = False
     n_folds = 5
 
