@@ -49,13 +49,8 @@ def loss_func(pred, target, smoothing=0.0):
 
     # smooth label
     target_smooth = torch.zeros_like(target)
-    print(target_smooth.shape)
-
     target_smooth.fill_(smoothing)
     target_smooth.scatter_(0, torch.where(target)[0], 1 - smoothing)
-
-    print(target_smooth.shape)
-
     return nn.BCEWithLogitsLoss(weight=weight)(pred, target_smooth)
 
 
