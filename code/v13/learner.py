@@ -46,6 +46,19 @@ def loss_func_sub(pred, target):
     return nn.CrossEntropyLoss()(pred, target)
 
 
+def mixup(x, y, alpha=0.4):
+    indices = torch.arange(0, len(y))
+    indices_0 = torch.where(y == 0)[0]
+    indices[indices_0] = indices_0[torch.randperm(len(indices_0))]
+
+    x_shuffled = x[indices]
+
+    lam = np.random.beta(alpha, alpha)
+    x = x * lam + x_shuffled * (1 - lam)
+
+    return x
+
+
 class Learner(object):
     def __init__(self, config):
         self.config = config
@@ -198,6 +211,10 @@ class Learner(object):
             y_sub_1 = y_sub_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
+
+            # do mixup
+            if np.random.random() < 0.5:
+                X_batch = mixup(X_batch, y_batch)
 
             preds, p_sub_1 = model(X_batch)
 
