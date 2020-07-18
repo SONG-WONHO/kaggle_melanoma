@@ -42,7 +42,7 @@ class AverageMeter(object):
 #     return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
 
 
-def loss_func(pred, target, smoothing=0.0):
+def loss_func(pred, target, smoothing=0.1):
 
     # weight
     weight = (target == 1).type(torch.int8) + 1
