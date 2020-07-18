@@ -38,8 +38,8 @@ class AverageMeter(object):
 
 # loss function
 def loss_func(pred, target):
-    weight = (target == 1).type(torch.int8) + 1
-    return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
+    # weight = (target == 1).type(torch.int8) + 1
+    return nn.CrossEntropyLoss()(pred, target)
 
 
 def loss_func_sub(pred, target):
@@ -149,6 +149,7 @@ class Learner(object):
             sub_1_final.append(p_sub_1.detach().cpu())
 
         pred_final = torch.cat(pred_final, dim=0)
+        pred_final = nn.Softmax()(pred_final)[:, -1]
 
         sub_1_final = torch.cat(sub_1_final, dim=0)
         sub_1_final = nn.Softmax()(sub_1_final)[:, -1]
@@ -194,14 +195,14 @@ class Learner(object):
         train_iterator = tqdm(train_loader, leave=False)
         for X_batch, y_batch, y_sub_1, _ in train_iterator:
             X_batch = X_batch.to(self.config.device)
-            y_batch = y_batch.to(self.config.device).type(torch.float32)
+            y_batch = y_batch.to(self.config.device)#.type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
             preds, p_sub_1 = model(X_batch)
 
-            loss = loss_func(preds.view(-1), y_batch.view(-1))
+            loss = loss_func(preds, y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
             loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
@@ -227,14 +228,14 @@ class Learner(object):
         valid_loader = tqdm(valid_loader, leave=False)
         for i, (X_batch, y_batch, y_sub_1, _) in enumerate(valid_loader):
             X_batch = X_batch.to(self.config.device)
-            y_batch = y_batch.to(self.config.device).type(torch.float32)
+            y_batch = y_batch.to(self.config.device)#.type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
             with torch.no_grad():
                 preds, p_sub_1 = model(X_batch)
-                loss = loss_func(preds.view(-1), y_batch.view(-1))
+                loss = loss_func(preds, y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
 
                 loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
@@ -247,8 +248,9 @@ class Learner(object):
             valid_loader.set_description(f"valid bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}")
 
         true_final = torch.cat(true_final, dim=0)
-        pred_final = torch.cat(pred_final, dim=0).view(-1)
-        pred_final = torch.sigmoid(pred_final)
+
+        pred_final = torch.cat(pred_final, dim=0)
+        pred_final = nn.Softmax()(pred_final)[:, -1]
 
         vl_score = roc_auc_score(true_final.cpu().numpy(), pred_final.cpu().numpy())
         vl_acc = accuracy_score(true_final.cpu().numpy(), np.round(pred_final.cpu().numpy()))
