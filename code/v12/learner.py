@@ -38,8 +38,8 @@ class AverageMeter(object):
 
 # loss function
 def loss_func(pred, target):
-    # weight = (target == 1).type(torch.int8) + 1
-    return nn.CrossEntropyLoss()(pred, target)
+    weight = (target == 1).type(torch.int8) + 1
+    return nn.CrossEntropyLoss(weight=weight)(pred, target)
 
 
 def loss_func_sub(pred, target):
