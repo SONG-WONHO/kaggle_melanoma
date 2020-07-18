@@ -42,7 +42,25 @@ class AverageMeter(object):
 #     return nn.BCEWithLogitsLoss(weight=weight)(pred, target)
 
 
-def loss_func(pred, target, smoothing=0.0):
+class LabelSmoothingLoss(nn.Module):
+    def __init__(self, classes, smoothing=0.0, dim=-1):
+        super(LabelSmoothingLoss, self).__init__()
+        self.confidence = 1.0 - smoothing
+        self.smoothing = smoothing
+        self.cls = classes
+        self.dim = dim
+
+    def forward(self, pred, target):
+        pred = pred.log_softmax(dim=self.dim)
+        with torch.no_grad():
+            # true_dist = pred.data.clone()
+            true_dist = torch.zeros_like(pred)
+            true_dist.fill_(self.smoothing / (self.cls - 1))
+            true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
+        return torch.mean(torch.sum(-true_dist * pred, dim=self.dim))
+
+
+def loss_func(pred, target, smoothing=0.1):
 
     # weight
     weight = (target == 1).type(torch.int8) + 1
@@ -55,7 +73,7 @@ def loss_func(pred, target, smoothing=0.0):
 
 
 def loss_func_sub(pred, target):
-    return nn.CrossEntropyLoss()(pred, target)
+    return nn.LabelSmoothingLoss(classes=3, smoothing=0.1)(pred, target)
 
 
 class Learner(object):
