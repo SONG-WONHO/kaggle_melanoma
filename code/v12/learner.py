@@ -73,7 +73,7 @@ def loss_func(pred, target, smoothing=0.1):
 
 
 def loss_func_sub(pred, target):
-    return nn.LabelSmoothingLoss(classes=3, smoothing=0.1)(pred, target)
+    return LabelSmoothingLoss(classes=3, smoothing=0.1)(pred, target)
 
 
 class Learner(object):
