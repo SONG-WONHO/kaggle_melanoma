@@ -47,7 +47,7 @@ def loss_func_sub(pred, target):
 
 
 def mixup(x, y, alpha=0.4):
-    indices = torch.arange(0, len(y))
+    indices = torch.arange(0, len(y)).to(y.device)
     indices_0 = torch.where(y == 0)[0]
     indices[indices_0] = indices_0[torch.randperm(len(indices_0))]
 
