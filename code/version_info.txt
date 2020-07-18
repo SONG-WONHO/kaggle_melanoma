@@ -44,8 +44,14 @@ v10: Aux Target
 v11: Handle Overfitting
     - Dropout
     - Weight Decay
+    - Bad
 
 v12: LabelSmoothingLoss
+    - Bad
+
+v13: Cutmix and Mixup
+
+
 
 
 To Do
