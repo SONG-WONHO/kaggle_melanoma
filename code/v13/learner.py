@@ -213,7 +213,7 @@ class Learner(object):
             batch_size = X_batch.size(0)
 
             # do mixup
-            if np.random.random() < 0.5:
+            if np.random.random() < 1:
                 X_batch = mixup(X_batch, y_batch)
 
             preds, p_sub_1 = model(X_batch)
@@ -225,9 +225,7 @@ class Learner(object):
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             optimizer.zero_grad()
-            # (loss + loss_sub_1).backward()
-            # loss.backward()
-            loss_sub_1.backward()
+            (loss + loss_sub_1).backward()
             optimizer.step()
 
             train_iterator.set_description(
@@ -289,8 +287,8 @@ class Learner(object):
 
     def _create_logger(self):
         log_cols = ['tr_loss', 'tr_loss_sub_1',
-                    'val_loss', 'val_metric_origin', 'val_acc',
-                    'val_loss_sub_1', 'val_metric',
+                    'val_loss', 'val_metric', 'val_acc',
+                    'val_loss_sub_1', 'sub_1_score',
                     'en1',
                     'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
