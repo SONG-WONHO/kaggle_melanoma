@@ -226,7 +226,8 @@ class Learner(object):
 
             optimizer.zero_grad()
             # (loss + loss_sub_1).backward()
-            loss.backward()
+            # loss.backward()
+            loss_sub_1.backward()
             optimizer.step()
 
             train_iterator.set_description(
