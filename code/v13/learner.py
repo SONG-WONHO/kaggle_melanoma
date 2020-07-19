@@ -289,8 +289,8 @@ class Learner(object):
 
     def _create_logger(self):
         log_cols = ['tr_loss', 'tr_loss_sub_1',
-                    'val_loss', 'val_metric', 'val_acc',
-                    'val_loss_sub_1', 'sub_1_score',
+                    'val_loss', 'val_metric_origin', 'val_acc',
+                    'val_loss_sub_1', 'val_metric',
                     'en1',
                     'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
