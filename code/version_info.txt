@@ -49,13 +49,21 @@ v11: Handle Overfitting
 v12: LabelSmoothingLoss
     - Bad
 
-v13: Cutmix and Mixup
+v13: Cutmix, Mixup, Augmix, Gridmix
     - Mixup
         - Only to same class: Bad(Overfitting)
         - All class: Maybe Good(Higher CV)
     - Cutmix:
+        - Only to same class: Bad(Overfitting)
+        - All class: Maybe Bad ...
+    - Augmix
+    - Gridmix
 
-v14: Edit Model head Architecture
+v14: Stochastic Weight Averaging Version 2
+    - Base v13(Mixup)
+    - Use Best AUC Score(n=4)
+
+v15: Edit Model head Architecture
     - Pooling
     - Head Dimension
 
