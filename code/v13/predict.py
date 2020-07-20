@@ -83,8 +83,7 @@ def main():
         score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[1]
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
-        fold_list.append(int(score.reset_index()['index']))
-        print(fold_list)
+        fold_list.append(int(pd.read_csv(fn).sort_values("val_metric", ascending=False).reset_index().iloc[1]['index']))
 
     CFG.sub_name = f"submission." \
                    f"ver_{args.version}." \
