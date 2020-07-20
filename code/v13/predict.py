@@ -77,13 +77,11 @@ def main():
     for k, v in env.items(): setattr(CFG, k, v)
 
     loss, metric = 0, 0
-    fold_list = []
     for fold in range(CFG.n_folds):
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
-        score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[1]
+        score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
-        fold_list.append(int(pd.read_csv(fn).sort_values("val_metric", ascending=False).reset_index().iloc[1]['index']))
 
     CFG.sub_name = f"submission." \
                    f"ver_{args.version}." \
@@ -140,8 +138,7 @@ def main():
         if CFG.use_swa:
             model_name = f'model.fold_{fold}.swa.pt'
         else:
-            # model_name = f'model.fold_{fold}.best.pt'
-            model_name = f'model.fold_{fold}.epoch_{fold_list[fold]}.pt'
+            model_name = f'model.fold_{fold}.best.pt'
         learner = Learner(CFG)
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
