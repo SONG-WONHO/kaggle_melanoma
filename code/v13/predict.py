@@ -152,7 +152,7 @@ def main():
             test_preds = preds
 
             # case 2
-            test_preds = sub_1
+            # test_preds = sub_1
 
             # case 3
             # test_preds = (preds + sub_1) / 2
