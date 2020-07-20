@@ -80,10 +80,10 @@ def main():
     fold_list = []
     for fold in range(CFG.n_folds):
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
-        score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
+        score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[1]
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
-        fold_list.append(pd.read_csv(fn).sort_values("val_metric", ascending=False).reset_index().iloc[1]['index'])
+        fold_list.append(int(score.reset_index()['index']))
         print(fold_list)
 
     CFG.sub_name = f"submission." \
@@ -141,7 +141,8 @@ def main():
         if CFG.use_swa:
             model_name = f'model.fold_{fold}.swa.pt'
         else:
-            model_name = f'model.fold_{fold}.best.pt'
+            # model_name = f'model.fold_{fold}.best.pt'
+            model_name = f'model.fold_{fold}.epoch_{fold_list[fold]}.pt'
         learner = Learner(CFG)
         learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
