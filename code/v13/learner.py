@@ -299,14 +299,14 @@ class Learner(object):
             preds, p_sub_1 = model(X_batch)
 
             # loss = loss_func(preds.view(-1), y_batch.view(-1))
-            loss = slef.mixup.loss(preds.view(-1), y_batch.view(-1))
+            loss = self.mixup.loss(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
             loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             optimizer.zero_grad()
-            (loss * 0.1 + loss_sub_1).backward()
+            (loss + loss_sub_1).backward()
             optimizer.step()
 
             train_iterator.set_description(
