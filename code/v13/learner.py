@@ -114,7 +114,7 @@ class Mixup(object):
         return x
 
     def loss(self, y_pred, y_true):
-        if self.is_mixup:
+        if self.is_augment:
             loss = self.lam * loss_func(y_pred, y_true) + (1 - self.lam) * loss_func(y_pred, y_true[self.indices])
 
             self.is_augment = False
