@@ -59,6 +59,39 @@ def mixup(x, y, alpha=0.4):
     return x
 
 
+def rand_bbox(size, lam):
+    W = size[2]
+    H = size[3]
+    cut_rat = np.sqrt(1. - lam)
+    cut_w = np.int(W * cut_rat)
+    cut_h = np.int(H * cut_rat)
+
+    # uniform
+    cx = np.random.randint(W)
+    cy = np.random.randint(H)
+
+    bbx1 = np.clip(cx - cut_w // 2, 0, W)
+    bby1 = np.clip(cy - cut_h // 2, 0, H)
+    bbx2 = np.clip(cx + cut_w // 2, 0, W)
+    bby2 = np.clip(cy + cut_h // 2, 0, H)
+
+    return bbx1, bby1, bbx2, bby2
+
+
+def cutmix(x, y, alpha=0.4):
+    indices = torch.arange(0, len(y)).to(y.device)
+    indices_0 = torch.where(y == 0)[0]
+    indices[indices_0] = indices_0[torch.randperm(len(indices_0))]
+
+    x_shuffled = x[indices]
+
+    lam = np.random.beta(alpha, alpha)
+    bbx1, bby1, bbx2, bby2 = rand_bbox(x.size(), lam)
+    x[:, :, bbx1:bbx2, bby1:bby2] = x_shuffled[:, :, bbx1:bbx2, bby1:bby2]
+
+    return x
+
+
 class Learner(object):
     def __init__(self, config):
         self.config = config
@@ -212,9 +245,14 @@ class Learner(object):
 
             batch_size = X_batch.size(0)
 
+            logit = np.random.random()
             # do mixup
-            if np.random.random() < 1:
+            if logit < 0.33:
                 X_batch = mixup(X_batch, y_batch)
+
+            # do cutmix
+            elif logit < 0.66:
+                X_batch = cutmix(X_batch, y_batch)
 
             preds, p_sub_1 = model(X_batch)
 
