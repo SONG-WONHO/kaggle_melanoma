@@ -426,7 +426,7 @@ def augment_and_mix(image, severity=3, width=3, depth=-1, alpha=1.):
         image_aug = image.copy()
         depth = depth if depth > 0 else np.random.randint(1, 4)
         for _ in range(depth):
-            op = np.random.choice(augmentations)
+            op = np.random.choice(augmentations_all)
             image_aug = apply_op(image_aug, op, severity)
         # Preprocessing commutes since all coefficients are convex
         mix += ws[i] * image_aug
@@ -469,6 +469,36 @@ def transform_v8(config):
         Flip(p=1),
         RandomRotate90(p=1),
         RandomBrightnessContrast(0.1, 0.1, p=1),
+        RandomAugMix(severity=3, width=3, alpha=1., p=0.5),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transforms = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transforms, test_transforms
+
+
+def transform_v9(config):
+    """ Flip, Rotate, Augmix
+
+    Args:
+        config: CFG
+
+    Returns: train_tranforms, test_transforms
+    """
+    train_transforms = Compose([
+        Flip(p=1),
+        RandomRotate90(p=1),
         RandomAugMix(severity=3, width=3, alpha=1., p=0.5),
         Normalize(
             mean=[0.485, 0.456, 0.406],
