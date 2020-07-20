@@ -50,11 +50,15 @@ v12: LabelSmoothingLoss
     - Bad
 
 v13: Cutmix and Mixup
-    - Mixup: Good
+    - Mixup
+        - Only to same class: Bad(Overfitting)
+        - All class: Maybe Good(Higher CV)
+    - Cutmix:
 
-
+v14: Edit Model head Architecture
+    - Pooling
+    - Head Dimension
 
 
 To Do
     - Focal Loss
-    - Cutmix or mixup to 0 label, if good extend to sub targets
