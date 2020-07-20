@@ -48,8 +48,14 @@ def loss_func_sub(pred, target):
 
 def mixup(x, y, alpha=0.4):
     indices = torch.arange(0, len(y)).to(y.device)
+
     indices_0 = torch.where(y == 0)[0]
-    indices[indices_0] = indices_0[torch.randperm(len(indices_0))]
+    if indices_0.size(0) > 1:
+        indices[indices_0] = indices_0[torch.randperm(len(indices_0))]
+
+    indices_1 = torch.where(y == 1)[0]
+    if indices_1.size(0) > 1:
+        indices[indices_1] = indices_0[torch.randperm(len(indices_1))]
 
     x_shuffled = x[indices]
 
@@ -247,12 +253,12 @@ class Learner(object):
 
             logit = np.random.random()
             # do mixup
-            if logit < 0.33:
-                X_batch = mixup(X_batch, y_batch)
+            if logit < 0.5:
+                X_batch = mixup(X_batch, y_sub_1)
 
             # do cutmix
-            elif logit < 0.66:
-                X_batch = cutmix(X_batch, y_batch)
+            # elif logit < 0.66:
+            #     X_batch = cutmix(X_batch, y_batch)
 
             preds, p_sub_1 = model(X_batch)
 
