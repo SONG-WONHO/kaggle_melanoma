@@ -117,10 +117,6 @@ class Mixup(object):
         if self.is_augment:
             loss = self.lam * loss_func(y_pred, y_true) + (1 - self.lam) * loss_func(y_pred, y_true[self.indices])
 
-            self.is_augment = False
-            self.indices = None
-            self.lam = None
-
         else:
             loss = loss_func(y_pred, y_true)
 
@@ -129,10 +125,6 @@ class Mixup(object):
     def loss_sub(self, y_pred, y_true):
         if self.is_augment:
             loss = self.lam * loss_func_sub(y_pred, y_true) + (1 - self.lam) * loss_func_sub(y_pred, y_true[self.indices])
-
-            self.is_augment = False
-            self.indices = None
-            self.lam = None
 
         else:
             loss = loss_func_sub(y_pred, y_true)
@@ -149,6 +141,11 @@ class Mixup(object):
         x = lam * x + (1 - lam) * x[indices]
 
         return x
+
+    def on_batch_end(self):
+        self.is_augment = False
+        self.lam = None
+        self.indices = None
 
 
 class Learner(object):
@@ -305,8 +302,6 @@ class Learner(object):
 
             batch_size = X_batch.size(0)
 
-            logit = np.random.random()
-
             X_batch = self.mixup.augment(X_batch)
 
             preds, p_sub_1 = model(X_batch)
@@ -325,6 +320,8 @@ class Learner(object):
 
             train_iterator.set_description(
                 f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
+
+            self.mixup.on_batch_end()
 
         return losses.avg, losses_sub_1.avg
 
