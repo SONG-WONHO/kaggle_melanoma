@@ -126,6 +126,19 @@ class Mixup(object):
 
         return loss
 
+    def loss_sub(self, y_pred, y_true):
+        if self.is_augment:
+            loss = self.lam * loss_func_sub(y_pred, y_true) + (1 - self.lam) * loss_func_sub(y_pred, y_true[self.indices])
+
+            self.is_augment = False
+            self.indices = None
+            self.lam = None
+
+        else:
+            loss = loss_func_sub(y_pred, y_true)
+
+        return loss
+
     def mixup(self, x):
         indices = torch.randperm(x.size(0))
         lam = np.random.beta(self.alpha, self.alpha)
@@ -302,7 +315,8 @@ class Learner(object):
             loss = self.mixup.loss(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
-            loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
+            # loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
+            loss_sub_1 = self.mixup.loss_sub(p_sub_1, y_sub_1.view(-1))
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             optimizer.zero_grad()
