@@ -98,12 +98,53 @@ def cutmix(x, y, alpha=0.4):
     return x
 
 
+class Mixup(object):
+    def __init__(self, alpha=0.4):
+        self.alpha = alpha
+        self.is_augment = False
+        self.indices = None
+        self.lam = None
+
+    def augment(self, x):
+        logit = np.random.random()
+        if logit < 0.5:
+            self.is_augment = True
+            x = self.mixup(x)
+
+        return x
+
+    def loss(self, y_pred, y_true):
+        if self.is_mixup:
+            loss = self.lam * loss_func(y_pred, y_true) + (1 - self.lam) * loss_func(y_pred, y_true[self.indices])
+
+            self.is_augment = False
+            self.indices = None
+            self.lam = None
+
+        else:
+            loss = loss_func(y_pred, y_true)
+
+        return loss
+
+    def mixup(self, x):
+        indices = torch.randperm(x.size(0))
+        lam = np.random.beta(self.alpha, self.alpha)
+
+        self.indices = indices
+        self.lam = lam
+
+        x = lam * x + (1 - lam) * x[indices]
+
+        return x
+
+
 class Learner(object):
     def __init__(self, config):
         self.config = config
         self.best_model = None
         self.logger = None
         self.name = "model"
+        self.mixup = Mixup()
 
     def train(self, trn_data, val_data, model, optimizer, scheduler):
 
@@ -252,17 +293,13 @@ class Learner(object):
             batch_size = X_batch.size(0)
 
             logit = np.random.random()
-            # do mixup
-            if logit < 0.5:
-                X_batch = mixup(X_batch, y_sub_1)
 
-            # do cutmix
-            # elif logit < 0.66:
-            #     X_batch = cutmix(X_batch, y_batch)
+            X_batch = self.mixup.augment(X_batch)
 
             preds, p_sub_1 = model(X_batch)
 
-            loss = loss_func(preds.view(-1), y_batch.view(-1))
+            # loss = loss_func(preds.view(-1), y_batch.view(-1))
+            loss = slef.mixup.loss(preds.view(-1), y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
             loss_sub_1 = loss_func_sub(p_sub_1, y_sub_1.view(-1))
