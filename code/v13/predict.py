@@ -77,11 +77,14 @@ def main():
     for k, v in env.items(): setattr(CFG, k, v)
 
     loss, metric = 0, 0
+    fold_list = []
     for fold in range(CFG.n_folds):
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
         score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
         loss += score['val_loss'] / CFG.n_folds
         metric += score['val_metric'] / CFG.n_folds
+        fold_list.append(pd.read_csv(fn).sort_values("val_metric", ascending=False).reset_index().iloc[1]['index'])
+        print(fold_list)
 
     CFG.sub_name = f"submission." \
                    f"ver_{args.version}." \
