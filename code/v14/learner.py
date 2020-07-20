@@ -202,11 +202,16 @@ class Learner(object):
                 best_metric = logger.loc[epoch, 'val_metric']
                 self.best_model = copy.deepcopy(model)
                 name = self.name
-                self.name = f"{name}.epoch_{epoch}"
-                self.save()
                 self.name = f"{name}.best"
                 self.save()
                 self.name = name
+
+            # save all epochs
+            self.best_model = copy.deepcopy(model)
+            name = self.name
+            self.name = f"{name}.epoch_{epoch}"
+            self.save()
+            self.name = name
 
             if self.config.swa and ((epoch + 1) % 4) == 0:
                 optimizer.update_swa()
