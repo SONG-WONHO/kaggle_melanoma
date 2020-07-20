@@ -50,6 +50,7 @@ v12: LabelSmoothingLoss
     - Bad
 
 v13: Cutmix and Mixup
+    - Mixup: Good
 
 
 
