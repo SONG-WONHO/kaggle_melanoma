@@ -58,10 +58,13 @@ v13: Cutmix, Mixup, Augmix, Gridmix
         - All class: Maybe Bad ...
     - Augmix
     - Gridmix
+    - New transform Baseline
 
-v14: Snapshot Ensemble
+v14: Snapshot Ensemble & SWA
     - Base v13(Mixup)
     - Use Best AUC Score(n=4)
+    - Very Good
+    - More experiment later
 
 v15: Edit Model head Architecture
     - Pooling
