@@ -98,6 +98,9 @@ def main():
     if CFG.use_swa:
         CFG.sub_name = "swa." + CFG.sub_name
 
+    if CFG.use_snapshot:
+        CFG.sub_name = "snapshot." + CFG.sub_name
+
     # CFG.batch_size = 1
 
     pprint({k: v for k, v in dict(CFG.__dict__).items() if '__' not in k})
