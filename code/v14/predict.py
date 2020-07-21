@@ -27,6 +27,9 @@ class CFG:
     workers = 0
     seed = 42
 
+    # etc
+    verbose = False
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -54,6 +57,7 @@ def main():
     parser.add_argument('--tta', action='store_true', default=False)
     parser.add_argument('--use-swa', action='store_true', default=False)
     parser.add_argument('--use-snapshot', action='store_true', default=False)
+    parser.add_argument('--verbose', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -71,6 +75,7 @@ def main():
     CFG.tta = args.tta
     CFG.use_swa = args.use_swa
     CFG.use_snapshot = args.use_snapshot
+    CFG.verbose = args.verbose
 
     # get device
     CFG.device = get_device()
@@ -142,11 +147,10 @@ def main():
             log = pd.read_csv(fn).rename({"Unnamed: 0": "epoch"}, axis=1).sort_values("sub_1_score", ascending=False)
             print(log.head(5))
             epochs = log['epoch'].values.tolist()[:5]
-
+            learner = Learner(CFG)
             test_preds = np.zeros(test_df.shape[0])
             for epoch in tqdm(epochs, leave=False):
                 model_name = f'model.fold_{fold}.epoch_{epoch}.pt'
-                learner = Learner(CFG)
                 learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
                 preds, sub_1 = learner.predict(tst_data)
