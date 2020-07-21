@@ -5,49 +5,60 @@ v1: Sampler
     - BalanceBatchSampler: sample class to be stratified in batch level (Good)
     - BalanceSampler: upsample or downsample (Bad)
     - Sampler is bad when use cosine scehudler
+    - OX
 
 v2: Custom loss
     - Weighted Loss Function (weighted to melanoma) (Bad)
+    - X
 
 v3: Best Metric vs Best Loss
     - From best metric to best Loss: Don`t know well
     - Need to change loss functions
+    - OX
 
 v4: Scheduler
     - CosineWarmUp (Good)
+    - O
 
 v5: Stochastic Weight Averaging
     - Done (Good, Need to experiment)
+    - O
 
 v6: Transform Test
     - v5, Add SWA option (Good, Need to experiment)
     - WIP
 
 v7: Train from scratch
-    - More and more (WIP)
+    - More and more
+    - X
 
 v8: Change Target
     - BinaryClassification to MultiLabelClassification
     - Need more experiment, lb isn`t aligned to cv scores.
+    - O
 
 v9: Sub Target
     - Sub Target 1: diagnosis (Good)
     - Sub Target 2: anatom_site_general_challenge + diagnosis (Good or Bad, overfitting)
     - Must check dependency with meta features.
     - sub target 2 lead to overfit, so there are needs for limitation of overfitting.
+    - OX
 
 v10: Aux Target
     - Base model: Multitask model (binary target + sub target 1)
     - Aux target: anatom_site_general_challenge (Bad, overfitting)
     - Must check dependency with meta features.
+    - OX
 
 v11: Handle Overfitting
     - Dropout
     - Weight Decay
-    - Bad
+    - Bad, But tried more
+    - OX
 
 v12: LabelSmoothingLoss
     - Bad
+    - X
 
 v13: Cutmix, Mixup, Augmix, Gridmix
     - Mixup
@@ -57,18 +68,23 @@ v13: Cutmix, Mixup, Augmix, Gridmix
         - Only to same class: Bad(Overfitting)
         - All class: Maybe Bad ...
     - Augmix
+        - Good
     - Gridmix
+        - To do
     - New transform Baseline
+    - O
 
 v14: Snapshot Ensemble & SWA
     - Base v13(Mixup)
     - Use Best AUC Score(n=4)
     - Very Good
     - More experiment later
+    - O
 
 v15: Edit Model head Architecture
     - Pooling
     - Head Dimension
+    - To do
 
 
 To Do
