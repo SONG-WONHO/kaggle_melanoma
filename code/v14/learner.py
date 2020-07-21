@@ -280,8 +280,7 @@ class Learner(object):
         model = get_model(self.config)
         try:
             model.load_state_dict(model_state_dict)
-            if self.config.verbose:
-                print("... Single GPU (Train)")
+            print("... Single GPU (Train)")
         except:
             def strip_module_str(v):
                 if v.startswith('module.'):
@@ -289,8 +288,7 @@ class Learner(object):
 
             model_state_dict = {strip_module_str(k): v for k, v in model_state_dict.items()}
             model.load_state_dict(model_state_dict)
-            if self.config.verbose:
-                print("... Multi GPU (Train)")
+            print("... Multi GPU (Train)")
 
         self.best_model = model.to(self.config.device)
         print("... Model Loaded!")
