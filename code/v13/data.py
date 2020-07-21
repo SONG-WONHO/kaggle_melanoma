@@ -6,6 +6,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from typing import Iterator, List, Optional, Union
 
 import cv2
+from PIL import Image
 
 from torch.utils.data import Dataset, Sampler
 
@@ -123,9 +124,9 @@ class MelanomaDataset(Dataset):
         # Apply transformations
         if self.transforms:
             # if albumentations
-            im = self.transforms(image=im)['image']
-            # if torch toolbox
-            # im = self.transforms(im)
+            # im = self.transforms(image=im)['image']
+            # if torch torchvision
+            im = self.transforms(Image.fromarray(im))
 
         return im, label, sub_1, aux_1
 
