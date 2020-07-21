@@ -59,7 +59,7 @@ v13: Cutmix, Mixup, Augmix, Gridmix
     - Augmix
     - Gridmix
 
-v14: Stochastic Weight Averaging Version 2
+v14: Snapshot Ensemble
     - Base v13(Mixup)
     - Use Best AUC Score(n=4)
 
