@@ -140,11 +140,11 @@ def main():
         if CFG.use_snapshot:
             fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
             log = pd.read_csv(fn).rename({"Unnamed: 0": "epoch"}, axis=1).sort_values("sub_1_score", ascending=False)
-            print(log.head(5))
+            print(log.head(5), '\n')
             epochs = log['epoch'].values.tolist()[:5]
 
             test_preds = np.zeros(test_df.shape[0])
-            for epoch in tqdm(epochs, leave=False):
+            for epoch in epochs:
                 print(f"***** EPOCH: {epoch} *****")
                 model_name = f'model.fold_{fold}.epoch_{epoch}.pt'
                 learner = Learner(CFG)
