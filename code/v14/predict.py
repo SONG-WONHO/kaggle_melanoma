@@ -145,6 +145,7 @@ def main():
 
             test_preds = np.zeros(test_df.shape[0])
             for epoch in tqdm(epochs, leave=False):
+                print(f"***** EPOCH: {epoch} *****")
                 model_name = f'model.fold_{fold}.epoch_{epoch}.pt'
                 learner = Learner(CFG)
                 learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
