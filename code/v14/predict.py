@@ -1,6 +1,7 @@
 import os, sys, argparse, json
 from pprint import pprint
 import warnings
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -52,6 +53,7 @@ def main():
     # etc
     parser.add_argument('--tta', action='store_true', default=False)
     parser.add_argument('--use-swa', action='store_true', default=False)
+    parser.add_argument('--use-snapshot', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -68,6 +70,7 @@ def main():
 
     CFG.tta = args.tta
     CFG.use_swa = args.use_swa
+    CFG.use_snapshot = args.use_snapshot
 
     # get device
     CFG.device = get_device()
@@ -133,34 +136,60 @@ def main():
     # folds
     for fold in range(CFG.n_folds):
         print(f"========== Fold: {fold} ==========")
-        # load learner
-        print("Load Model")
-        if CFG.use_swa:
-            model_name = f'model.fold_{fold}.swa.pt'
-        else:
-            model_name = f'model.fold_{fold}.best.pt'
-        learner = Learner(CFG)
-        learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
-        # prediction
-        if not CFG.tta:
-            preds, sub_1 = learner.predict(tst_data)
-            preds = torch.sigmoid(preds.view(-1)).numpy()
-            sub_1 = sub_1.view(-1).numpy()
+        if CFG.use_snapshot:
+            fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
+            log = pd.read_csv(fn).rename({"Unnamed: 0": "epoch"}, axis=1).sort_values("sub_1_score", ascending=False)
+            print(log.head(5))
+            epochs = log['epoch'].values.tolist()[:5]
 
-            # case 1
-            test_preds = preds
-
-            # case 2
-            test_preds = sub_1
-
-            # case 3
-            # test_preds = (preds + sub_1) / 2
-
-        else:
             test_preds = np.zeros(test_df.shape[0])
-            for _ in range(4):
-                test_preds += torch.sigmoid(learner.predict(tst_data)[0].view(-1)).numpy() / 4
+            for epoch in tqdm(epochs, leave=False):
+                model_name = f'model.fold_{fold}.epoch_{epoch}.pt'
+                learner = Learner(CFG)
+                learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
+
+                preds, sub_1 = learner.predict(tst_data)
+                preds = torch.sigmoid(preds.view(-1)).numpy()
+                sub_1 = sub_1.view(-1).numpy()
+
+                # case 1
+                snapshot_preds = preds
+
+                # case 2
+                snapshot_preds = sub_1
+
+                test_preds += snapshot_preds / len(epochs)
+
+        else:
+            # load learner
+            print("Load Model")
+            if CFG.use_swa:
+                model_name = f'model.fold_{fold}.swa.pt'
+            else:
+                model_name = f'model.fold_{fold}.best.pt'
+            learner = Learner(CFG)
+            learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
+
+            # prediction
+            if not CFG.tta:
+                preds, sub_1 = learner.predict(tst_data)
+                preds = torch.sigmoid(preds.view(-1)).numpy()
+                sub_1 = sub_1.view(-1).numpy()
+
+                # case 1
+                test_preds = preds
+
+                # case 2
+                test_preds = sub_1
+
+                # case 3
+                # test_preds = (preds + sub_1) / 2
+
+            else:
+                test_preds = np.zeros(test_df.shape[0])
+                for _ in range(4):
+                    test_preds += torch.sigmoid(learner.predict(tst_data)[0].view(-1)).numpy() / 4
 
         final_preds += test_preds / CFG.n_folds
         print()
