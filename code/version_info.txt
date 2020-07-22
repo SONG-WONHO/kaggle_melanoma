@@ -69,8 +69,6 @@ v13: Cutmix, Mixup, Augmix, Gridmix
         - All class: Maybe Bad ...
     - Augmix
         - Good
-    - Gridmix
-        - To do
     - New transform Baseline
     - O
 
@@ -82,6 +80,7 @@ v14: Snapshot Ensemble & SWA
     - O
 
 v15: Edit Model head Architecture
+    - Base v13(Mixup + Augmix)
     - Pooling
     - Head Dimension
     - To do
