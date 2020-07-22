@@ -239,7 +239,7 @@ def main():
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         #     optimizer, mode='min', patience=1, verbose=False, factor=0.2)
         # scheduler = CosineAnnealingLRWarmup(optimizer, T_min=int(CFG.num_epochs / 5), T_max=CFG.num_epochs)
-        T = 4
+        T = 1
         scheduler = CosineAnnealingLRWarmup(optimizer, T_min=0, T_max=CFG.num_epochs//T)
 
         ### train related
