@@ -81,7 +81,7 @@ def main():
         fn = os.path.join(CFG.log_path, f"log.fold_{fold}.csv")
         score = pd.read_csv(fn).sort_values("val_metric", ascending=False).iloc[0]
         loss += score['val_loss'] / CFG.n_folds
-        metric += score['val_metric'] / CFG.n_folds
+        metric += score['sub_1_score'] / CFG.n_folds
 
     CFG.sub_name = f"submission." \
                    f"ver_{args.version}." \
