@@ -64,16 +64,16 @@ class RocAucLoss(nn.Module):
         pos = torch.unsqueeze(pos, 0)
         neg = torch.unsqueeze(neg, 1)
 
+        print(pos.shape, neg.shape)
+
         # original paper suggests performance is robust to exact parameter choice
         gamma = 0.5
         p = 3
 
         difference = torch.zeros_like(pos * neg) + pos - neg - gamma
 
-        print(difference.shape)
         mask = difference > 0
         masked = difference.masked_fill(mask, 0)
-        print(masked.shape)
         return torch.mean(torch.pow(-masked, p))
 
 
