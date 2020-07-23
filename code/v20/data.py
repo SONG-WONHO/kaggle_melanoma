@@ -60,8 +60,8 @@ def load_data(config):
     test_df['sex_enc'] = test_df['sex'].fillna("male").map(mp)
 
     # age
-    train_df['age_approx'] = train_df['age_approx'].astype("float32")
-    test_df['age_approx'] = test_df['age_approx'].astype("float32")
+    train_df['age_approx'] = train_df['age_approx'].fillna(50).astype("float32")
+    test_df['age_approx'] = test_df['age_approx'].fillna(50).astype("float32")
 
     # anatom_site_general_challenge
     mp = {
