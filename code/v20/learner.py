@@ -242,11 +242,12 @@ class Learner(object):
 
         test_loader = tqdm(test_loader, leave=False)
 
-        for X_batch, _, _, _ in test_loader:
+        for X_batch, _, _, _, *meta in test_loader:
             X_batch = X_batch.to(self.config.device)
+            meta = [v.to(self.config.device) for v in meta]
 
             with torch.no_grad():
-                preds, p_sub_1 = model(X_batch)
+                preds, p_sub_1 = model(X_batch, meta)
 
             pred_final.append(preds.detach().cpu())
             sub_1_final.append(p_sub_1.detach().cpu())
