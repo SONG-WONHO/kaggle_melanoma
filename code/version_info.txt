@@ -83,7 +83,11 @@ v15: Edit Model head Architecture
     - Base v13(Mixup + Augmix)
     - Pooling
     - Head Dimension
-    - To do
+    - X
+
+v16: Loss test
+    - Base v13(Mixup + Augmix)
+    - RocAuc Loss
 
 
 To Do
