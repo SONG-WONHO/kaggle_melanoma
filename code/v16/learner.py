@@ -71,6 +71,7 @@ class RocAucLoss(nn.Module):
         p = 3
 
         difference = torch.zeros_like(pos * neg) + pos - neg - gamma
+        print(difference.shape)
 
         mask = difference > 0
         masked = difference.masked_fill(mask, 0)
