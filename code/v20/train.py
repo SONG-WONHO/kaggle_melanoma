@@ -5,6 +5,9 @@ import warnings
 import argparse
 from pprint import pprint
 
+import numpy as np
+import pandas as pd
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -182,6 +185,10 @@ def main():
     print("Get Transform")
     train_transforms, test_transforms = get_transform(CFG)
 
+    # oof preds
+    data_df['preds'] = np.nan
+    data_df['sub_1'] = np.nan
+
     # train test split
     for fold in range(CFG.n_folds):
         print(f"\nValidation Fold: {fold}")
@@ -245,7 +252,24 @@ def main():
         ### train related
         # train model
         learner.train(trn_data, val_data, model, optimizer, scheduler)
+
+        ### save OOF
+        # predict valid
+        preds, sub_1 = learner.predict(val_data)
+        preds = torch.sigmoid(preds.view(-1)).numpy()
+        sub_1 = sub_1.view(-1).numpy()
+
+        data_df.loc[data_df['fold'] == fold, 'preds'] = preds
+        data_df.loc[data_df['fold'] == fold, 'sub_1'] = sub_1
+
+        print(data_df[data_df['fold'] == fold]['preds'], data_df[data_df['fold'] == fold]['sub_1'])
+
         print()
+
+    print(data_df)
+
+    np.save(f'{os.path.join(CFG.log_path, "preds.npy")}', data_df['preds'].values)
+    np.save(f'{os.path.join(CFG.log_path, "sub_1.npy")}', data_df['sub_1'].values)
 
 
 if __name__ == "__main__":
