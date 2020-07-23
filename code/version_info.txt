@@ -93,6 +93,7 @@ v16: Loss test
 
 v20: Meta Features
     - Base v13(Mixup + Augmix)
+    - Save OOF
     - Merge meta features into additional dense layer
         - concat((B, image feature size), (B, meta feature size))
 
