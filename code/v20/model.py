@@ -10,10 +10,12 @@ class BaseModel(nn.Module):
         self.config = config
 
         # meta features
-        meta_emb = 32 + 64 + 32
+        meta_emb = 32 + 128 + 32
         self.sex_emb = nn.Embedding(2, 32)
-        self.site_emb = nn.Embedding(7, 64)
-        self.age_emb = nn.Linear(1, 32)
+        self.site_emb = nn.Embedding(7, 128)
+        self.age_emb = nn.Sequential(
+            nn.BatchNorm1d(1),
+            nn.Linear(1, 32),)
 
         # image
         self.model = EfficientNet.from_pretrained(config.backbone_name)
