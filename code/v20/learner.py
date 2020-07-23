@@ -232,7 +232,7 @@ class Learner(object):
         test_loader = DataLoader(
             tst_data,
             batch_size=self.config.batch_size * 2, shuffle=False,
-            num_workers=0, pin_memory=False
+            num_workers=0, pin_memory=True
         )
 
         pred_final = []
