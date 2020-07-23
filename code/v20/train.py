@@ -261,9 +261,6 @@ def main():
 
         data_df.loc[data_df['fold'] == fold, 'preds'] = preds
         data_df.loc[data_df['fold'] == fold, 'preds_sub_1'] = sub_1
-
-        print(data_df[data_df['fold'] == fold]['preds'], data_df[data_df['fold'] == fold]['preds_sub_1'])
-
         print()
 
     print(data_df)
