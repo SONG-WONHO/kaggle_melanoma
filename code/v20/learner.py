@@ -325,6 +325,8 @@ class Learner(object):
 
             self.mixup.on_batch_end()
 
+            break
+
         return losses.avg, losses_sub_1.avg
 
     def _valid_one_epoch(self, valid_loader, model):
