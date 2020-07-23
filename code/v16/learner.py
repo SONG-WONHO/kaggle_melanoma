@@ -78,6 +78,7 @@ class RocAucLoss(nn.Module):
 
 
 def loss_func(pred, target):
+    print(pred.shape)
     return RocAucLoss()(pred, target)
 
 
