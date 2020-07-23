@@ -64,14 +64,11 @@ class RocAucLoss(nn.Module):
         pos = torch.unsqueeze(pos, 0)
         neg = torch.unsqueeze(neg, 1)
 
-        print(pos.shape, neg.shape)
-
         # original paper suggests performance is robust to exact parameter choice
         gamma = 0.5
         p = 3
 
         difference = torch.zeros_like(pos * neg) + pos - neg - gamma
-        print(difference.shape)
 
         mask = difference > 0
         masked = difference.masked_fill(mask, 0)
@@ -79,7 +76,6 @@ class RocAucLoss(nn.Module):
 
 
 def loss_func(pred, target):
-    print(pred.shape)
     return RocAucLoss()(pred, target)
 
 
@@ -200,20 +196,18 @@ class Learner(object):
     def train(self, trn_data, val_data, model, optimizer, scheduler):
 
         ### BalanceBatchSampler
-        """
         balance_sampler = BalanceBatchSampler(trn_data.df[:, 1], self.config.batch_size)
 
         train_loader = DataLoader(
             trn_data, batch_sampler=balance_sampler,
             num_workers=self.config.workers, pin_memory=True,
         )
-        """
 
-        train_loader = DataLoader(
-            trn_data,
-            batch_size=self.config.batch_size, shuffle=True,
-            num_workers=self.config.workers, pin_memory=True,
-        )
+        # train_loader = DataLoader(
+        #     trn_data,
+        #     batch_size=self.config.batch_size, shuffle=True,
+        #     num_workers=self.config.workers, pin_memory=True,
+        # )
 
         valid_loader = DataLoader(
             val_data,
