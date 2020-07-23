@@ -232,7 +232,7 @@ class Learner(object):
         test_loader = DataLoader(
             tst_data,
             batch_size=self.config.batch_size * 2, shuffle=False,
-            num_workers=0, pin_memory=True
+            num_workers=0, pin_memory=False
         )
 
         pred_final = []
@@ -324,8 +324,6 @@ class Learner(object):
                 f"train bce:{losses.avg:.4f}, sub 1: {losses_sub_1.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
 
             self.mixup.on_batch_end()
-
-            break
 
         return losses.avg, losses_sub_1.avg
 

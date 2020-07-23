@@ -246,7 +246,7 @@ def main():
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         #     optimizer, mode='min', patience=1, verbose=False, factor=0.2)
         # scheduler = CosineAnnealingLRWarmup(optimizer, T_min=int(CFG.num_epochs / 5), T_max=CFG.num_epochs)
-        T = 1
+        T = 4
         scheduler = CosineAnnealingLRWarmup(optimizer, T_min=0, T_max=CFG.num_epochs//T)
 
         ### train related
@@ -261,9 +261,8 @@ def main():
 
         data_df.loc[data_df['fold'] == fold, 'preds'] = preds
         data_df.loc[data_df['fold'] == fold, 'preds_sub_1'] = sub_1
-        print()
 
-    print(data_df)
+        print()
 
     np.save(f'{os.path.join(CFG.log_path, "preds.npy")}', data_df['preds'].values)
     np.save(f'{os.path.join(CFG.log_path, "sub_1.npy")}', data_df['preds_sub_1'].values)
