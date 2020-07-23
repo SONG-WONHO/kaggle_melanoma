@@ -295,16 +295,17 @@ class Learner(object):
         model.train()
 
         train_iterator = tqdm(train_loader, leave=False)
-        for X_batch, y_batch, y_sub_1, _ in train_iterator:
+        for X_batch, y_batch, y_sub_1, _, *meta in train_iterator:
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
+            meta = [v.to(self.config.device) for v in meta]
 
             batch_size = X_batch.size(0)
 
             X_batch = self.mixup.augment(X_batch)
 
-            preds, p_sub_1 = model(X_batch)
+            preds, p_sub_1 = model(X_batch, meta)
 
             # loss = loss_func(preds.view(-1), y_batch.view(-1))
             loss = self.mixup.loss(preds.view(-1), y_batch.view(-1))
@@ -334,15 +335,16 @@ class Learner(object):
         model.eval()
 
         valid_loader = tqdm(valid_loader, leave=False)
-        for i, (X_batch, y_batch, y_sub_1, _) in enumerate(valid_loader):
+        for i, (X_batch, y_batch, y_sub_1, _, *meta) in enumerate(valid_loader):
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device).type(torch.float32)
             y_sub_1 = y_sub_1.to(self.config.device)
+            meta = [v.to(self.config.device) for v in meta]
 
             batch_size = X_batch.size(0)
 
             with torch.no_grad():
-                preds, p_sub_1 = model(X_batch)
+                preds, p_sub_1 = model(X_batch, meta)
                 loss = loss_func(preds.view(-1), y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
 

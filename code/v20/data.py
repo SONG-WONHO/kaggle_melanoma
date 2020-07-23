@@ -53,6 +53,28 @@ def load_data(config):
     train_df['aux_1'] = train_df['anatom_site_general_challenge'].astype(str).map(mp)
     test_df['aux_1'] = np.nan
 
+    ### meta features
+    # sex
+    mp = {'male': 0, 'female': 1}
+    train_df['sex_enc'] = train_df['sex'].fillna("male").map(mp)
+    test_df['sex_enc'] = test_df['sex'].fillna("male").map(mp)
+
+    # age
+    train_df['age_approx'] = train_df['age_approx'].astype("float32")
+    test_df['age_approx'] = test_df['age_approx'].astype("float32")
+
+    # anatom_site_general_challenge
+    mp = {
+        'head/neck': 0,
+        'upper extremity': 1,
+        'lower extremity': 2,
+        'torso': 3,
+        'nan': 4,
+        'palms/soles': 5,
+        'oral/genital': 6}
+    train_df['site_enc'] = train_df['anatom_site_general_challenge'].astype(str).map(mp)
+    test_df['site_enc'] = test_df['anatom_site_general_challenge'].astype(str).map(mp)
+
     if config.debug:
         train_df = train_df.sample(40)
         test_df = test_df.sample(40)
@@ -111,14 +133,14 @@ def split_data(config, df):
 class MelanomaDataset(Dataset):
     def __init__(self, config, df, transforms=None):
         self.config = config
-        self.df = df[['image_path', 'target', 'sub_1', 'aux_1']].values
+        self.df = df[['image_path', 'target', 'sub_1', 'aux_1', 'sex_enc', 'site_enc', 'age_approx']].values
         self.transforms = transforms
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        fn, label, sub_1, aux_1 = self.df[idx]
+        fn, label, sub_1, aux_1, sex, site, age = self.df[idx]
         im = cv2.imread(fn)
 
         # Apply transformations
@@ -128,7 +150,7 @@ class MelanomaDataset(Dataset):
             # if torch torchvision
             # im = self.transforms(Image.fromarray(im))
 
-        return im, label, sub_1, aux_1
+        return im, label, sub_1, aux_1, sex, site, age
 
 
 # noinspection PyMissingConstructor
