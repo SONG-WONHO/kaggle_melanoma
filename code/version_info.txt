@@ -87,7 +87,9 @@ v15: Edit Model head Architecture
 
 v16: Loss test
     - Base v13(Mixup + Augmix)
-    - RocAuc Loss
+    - RocAuc Loss (WIP)
+    - Focal Loss (To do)
+
 
 v20: Meta Features
     - Base v13(Mixup + Augmix)
@@ -96,4 +98,5 @@ v20: Meta Features
 
 
 To Do
-    - Focal Loss
+    - Patient prob * Melanoma prob
+    - patient Level Prediction - Transformer ?
