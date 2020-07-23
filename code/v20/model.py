@@ -10,9 +10,10 @@ class BaseModel(nn.Module):
         self.config = config
 
         # meta features
-        self.sex_emb = nn.Embedding(2, 16)
-        self.site_emb = nn.Embedding(7, 32)
-        self.age_emb = nn.Linear(1, 16)
+        meta_emb = 32 + 64 + 32
+        self.sex_emb = nn.Embedding(2, 32)
+        self.site_emb = nn.Embedding(7, 64)
+        self.age_emb = nn.Linear(1, 32)
 
         # image
         self.model = EfficientNet.from_pretrained(config.backbone_name)
@@ -27,10 +28,8 @@ class BaseModel(nn.Module):
             'efficientnet-b7': 2560}[config.backbone_name]
         self.dropout = nn.Dropout(config.dropout)
 
-        meta_emb = 16 + 32 + 16
         self.out = nn.Linear(in_features=self.c + meta_emb, out_features=config.num_targets, bias=True)
         self.sub_1 = nn.Linear(in_features=self.c + meta_emb, out_features=3, bias=True)
-
 
     def forward(self, x, meta):
         sex, site, age = meta
