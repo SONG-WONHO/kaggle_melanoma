@@ -227,7 +227,7 @@ class Learner(object):
             self.save()
 
     def predict(self, tst_data):
-        model = self.best_model
+        model = self.best_model.to(self.config.device)
 
         test_loader = DataLoader(
             tst_data,
