@@ -23,8 +23,8 @@ def load_data(config):
     # data_path = os.path.join(config.root_path, "melanoma-external-malignant-256")
     data_path = os.path.join(config.root_path, "jpeg-melanoma-256x256")
 
-    train_df = pd.read_csv(os.path.join(data_path, "train.csv"))
-    test_df = pd.read_csv(os.path.join(data_path, "test.csv"))
+    train_df = pd.read_csv(os.path.join(data_path, "train_v2.csv"))
+    test_df = pd.read_csv(os.path.join(data_path, "test_v2.csv"))
     test_df['target'] = np.nan
 
     train_df['image_path'] = data_path + "/train/" + train_df['image_name'] + ".jpg"
@@ -62,6 +62,14 @@ def load_data(config):
     # age
     train_df['age_approx'] = np.log1p(train_df['age_approx'].fillna(50).astype("float32"))
     test_df['age_approx'] = np.log1p(test_df['age_approx'].fillna(50).astype("float32"))
+
+    # width
+    train_df['width'] = np.log1p(train_df['width'].astype("float32"))
+    test_df['width'] = np.log1p(test_df['width'].astype("float32"))
+
+    # height
+    train_df['height'] = np.log1p(train_df['height'].astype("float32"))
+    test_df['height'] = np.log1p(test_df['height'].astype("float32"))
 
     # anatom_site_general_challenge
     mp = {
@@ -133,14 +141,17 @@ def split_data(config, df):
 class MelanomaDataset(Dataset):
     def __init__(self, config, df, transforms=None):
         self.config = config
-        self.df = df[['image_path', 'target', 'sub_1', 'aux_1', 'sex_enc', 'site_enc', 'age_approx']].values
+        self.df = df[['image_path', 'target', 'sub_1', 'aux_1', 'sex_enc', 'site_enc']].values
+        self.cont = df[['age_approx', 'width', 'height']].values
         self.transforms = transforms
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        fn, label, sub_1, aux_1, sex, site, age = self.df[idx]
+        fn, label, sub_1, aux_1, sex, site = self.df[idx]
+        cont = self.cont[idx]
+
         im = cv2.imread(fn)
 
         # Apply transformations
@@ -150,7 +161,7 @@ class MelanomaDataset(Dataset):
             # if torch torchvision
             # im = self.transforms(Image.fromarray(im))
 
-        return im, label, sub_1, aux_1, sex, site, age
+        return im, label, sub_1, aux_1, sex, site, cont
 
 
 # noinspection PyMissingConstructor
