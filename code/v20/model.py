@@ -10,12 +10,10 @@ class BaseModel(nn.Module):
         self.config = config
 
         # meta features
-        meta_emb = 32 + 128 + 32
+        meta_emb = 64#32 + 64 + 32
         self.sex_emb = nn.Embedding(2, 32)
-        self.site_emb = nn.Embedding(7, 128)
-        self.age_emb = nn.Sequential(
-            nn.BatchNorm1d(1),
-            nn.Linear(1, 32),)
+        self.site_emb = nn.Embedding(7, 64)
+        self.age_emb = nn.Linear(1, 32)
 
         # image
         self.model = EfficientNet.from_pretrained(config.backbone_name)
@@ -36,9 +34,9 @@ class BaseModel(nn.Module):
     def forward(self, x, meta):
         sex, site, age = meta
 
-        sex_emb = self.sex_emb(sex)
+        # sex_emb = self.sex_emb(sex)
         site_emb = self.site_emb(site)
-        age_emb = self.age_emb(age.unsqueeze(-1).type(torch.float32))
+        # age_emb = self.age_emb(age.unsqueeze(-1).type(torch.float32))
 
         meta_feat = torch.cat([sex_emb, site_emb, age_emb], dim=-1)
 
