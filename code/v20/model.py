@@ -61,9 +61,9 @@ class BaseModelV2(nn.Module):
 
         # meta features
         meta_emb = 16 + 64 + 16
-        self.sex_emb = nn.Embedding(2, 32)
+        self.sex_emb = nn.Embedding(2, 16)
         self.site_emb = nn.Embedding(7, 64)
-        self.age_emb = nn.Linear(1, 32)
+        self.age_emb = nn.Linear(1, 16)
         self.meta_emb = nn.Sequential(
             nn.Dropout(0.1),
             nn.LayerNorm(meta_emb),
