@@ -13,7 +13,7 @@ class BaseModel(nn.Module):
         meta_emb = 32 + 64 + 32
         self.sex_emb = nn.Embedding(2, 32)
         self.site_emb = nn.Embedding(7, 64)
-        self.age_emb = nn.Linear(1, 32)
+        self.cont_emb = nn.Linear(3, 32)
 
         # image
         self.model = EfficientNet.from_pretrained(config.backbone_name)
@@ -32,13 +32,13 @@ class BaseModel(nn.Module):
         self.sub_1 = nn.Linear(in_features=self.c + meta_emb, out_features=3, bias=True)
 
     def forward(self, x, meta):
-        sex, site, age = meta
+        sex, site, cont = meta
 
         sex_emb = self.sex_emb(sex)
         site_emb = self.site_emb(site)
-        age_emb = self.age_emb(age.unsqueeze(-1).type(torch.float32))
+        cont_emb = self.cont_emb(cont)
 
-        meta_feat = torch.cat([sex_emb, site_emb, age_emb], dim=-1)
+        meta_feat = torch.cat([sex_emb, site_emb, cont_emb], dim=-1)
 
         # features
         feat = self.model.extract_features(x)
