@@ -97,6 +97,9 @@ v20: Meta Features
     - Merge meta features into additional dense layer
         - concat((B, image feature size), (B, meta feature size))
 
+v20: Meta Features More
+    -
+
 
 To Do
     - Patient prob * Melanoma prob
