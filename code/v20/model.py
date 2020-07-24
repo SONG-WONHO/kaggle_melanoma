@@ -38,7 +38,8 @@ class BaseModel(nn.Module):
         site_emb = self.site_emb(site)
         # age_emb = self.age_emb(age.unsqueeze(-1).type(torch.float32))
 
-        meta_feat = torch.cat([sex_emb, site_emb, age_emb], dim=-1)
+        # meta_feat = torch.cat([sex_emb, site_emb, age_emb], dim=-1)
+        meta_feat = site_emb
 
         # features
         feat = self.model.extract_features(x)
