@@ -68,7 +68,7 @@ class BaseModelV2(nn.Module):
             nn.Dropout(0.1),
             nn.LayerNorm(meta_emb),
             nn.LeakyReLU(),
-            nn.Linear(meta_emb, 256)
+            nn.Linear(meta_emb, meta_emb*2)
         )
 
         # image
@@ -84,8 +84,8 @@ class BaseModelV2(nn.Module):
             'efficientnet-b7': 2560}[config.backbone_name]
         self.dropout = nn.Dropout(config.dropout)
 
-        self.out = nn.Linear(in_features=self.c + meta_emb, out_features=config.num_targets, bias=True)
-        self.sub_1 = nn.Linear(in_features=self.c + meta_emb, out_features=3, bias=True)
+        self.out = nn.Linear(in_features=self.c + meta_emb*2, out_features=config.num_targets, bias=True)
+        self.sub_1 = nn.Linear(in_features=self.c + meta_emb*2, out_features=3, bias=True)
 
     def forward(self, x, meta):
         sex, site, age = meta
