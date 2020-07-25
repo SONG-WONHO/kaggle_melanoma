@@ -21,7 +21,7 @@ def load_data(config):
     """
 
     # data_path = os.path.join(config.root_path, "melanoma-external-malignant-256")
-    data_path = os.path.join(config.root_path, f"jpeg-melanoma-{config.imagg_size}x{config.imagg_size}")
+    data_path = os.path.join(config.root_path, f"jpeg-melanoma-{config.image_size}x{config.image_size}")
 
     train_df = pd.read_csv(os.path.join(data_path, "train.csv"))
     test_df = pd.read_csv(os.path.join(data_path, "test.csv"))
