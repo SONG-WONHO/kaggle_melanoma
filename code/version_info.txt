@@ -90,6 +90,11 @@ v16: Loss test
     - RocAuc Loss (WIP)
     - Focal Loss (To do)
 
+v17: Apex & SyncBatchNorm
+    - Base v13(Mixup + Augmix)
+    - Apex
+    - Syncbatchnrom
+
 
 v20: Meta Features
     - Base v13(Mixup + Augmix)
