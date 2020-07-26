@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from efficientnet_pytorch import EfficientNet
 import torch.nn.functional as F
+from sync_batchnorm import convert_model
 
 
 class BaseModel(nn.Module):
