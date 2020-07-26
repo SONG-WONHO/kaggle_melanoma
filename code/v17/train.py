@@ -10,6 +10,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torchcontrib
 
+from apex import amp, optimizers
+
 from utils import *
 from data import *
 from transform import get_transform
@@ -228,6 +230,10 @@ def main():
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
              'weight_decay': 0.0}]
         optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+
+        model, optimizer = amp.initialize(
+            model, optimizer, verbosity=0
+        )
 
         # get optimizer
         # optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)

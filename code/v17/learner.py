@@ -15,6 +15,8 @@ import torch.nn.functional as F
 from data import BalanceBatchSampler
 from model import get_model
 
+from apex import amp, optimizers
+
 
 # average meter
 class AverageMeter(object):
@@ -315,7 +317,10 @@ class Learner(object):
             losses_sub_1.update(loss_sub_1.item(), batch_size)
 
             optimizer.zero_grad()
-            (loss + loss_sub_1).backward()
+
+            with amp.scale_loss(loss + loss_sub_1, optimizer) as scaled_loss:
+                scaled_loss.backward()
+
             optimizer.step()
 
             train_iterator.set_description(
