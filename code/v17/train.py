@@ -214,9 +214,6 @@ def main():
             model = get_model(CFG)
             model = model.to(CFG.device)
 
-        if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
-
         # get optimizer
         module_names = list(model.state_dict())
         no_decay = ['bias']
@@ -234,6 +231,9 @@ def main():
         model, optimizer = amp.initialize(
             model, optimizer, verbosity=0
         )
+
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
 
         # get optimizer
         # optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)
